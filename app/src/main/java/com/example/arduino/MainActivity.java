@@ -1,9 +1,11 @@
 package com.example.arduino;
 
 import android.content.ContentValues;
+import android.content.Intent;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -12,14 +14,17 @@ import java.util.logging.LogRecord;
 
 public class MainActivity extends AppCompatActivity {
     public static final int THREAD_HANDLER_SUCCESS_INFO = 1;
-    TextView tv_WeatherInfo;
+    private TextView tv_WeatherInfo;
 
-    ForeCastManager mForeCast;
-    String lon = "128.3910799"; // 좌표 설정
-    String lat = "36.1444292";  // 좌표 설정
-    MainActivity mThis;
-    ArrayList<ContentValues> mWeatherData;
-    ArrayList<WeatherInfo> mWeatherInfomation;
+    private ForeCastManager mForeCast;
+    private String lon = "128.3910799"; // 좌표 설정
+    private String lat = "36.1444292";  // 좌표 설정
+    private MainActivity mThis;
+    private ArrayList<ContentValues> mWeatherData;
+    private ArrayList<WeatherInfo> mWeatherInfomation;
+
+    private TextView tvSolar; // 레이아웃 전환 테스트용
+    private TextView tvWater; // 레이아웃 전환 테스트용
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,11 +34,27 @@ public class MainActivity extends AppCompatActivity {
     }
     public void Initialize()
     {
-        tv_WeatherInfo = (TextView)findViewById(R.id.tv_WeatherInfo);
+        tvSolar = findViewById(R.id.textView1);
+        tvSolar = findViewById(R.id.textView2);
+
+        tv_WeatherInfo = findViewById(R.id.tv_WeatherInfo);
         mWeatherInfomation = new ArrayList<>();
         mThis = this;
         mForeCast = new ForeCastManager(lon,lat,mThis);
         mForeCast.run();
+    }
+
+    public void onClickView(View v) { // 레이아웃 전환 테스트용
+        switch (v.getId()) {
+            case R.id.textView1:{
+                Intent intent = new Intent(this, SolarActivityTest.class);
+                startActivity(intent);
+            }
+            case R.id.textView2:{
+                Intent intent = new Intent(this, WaterActivityTest.class);
+                startActivity(intent);
+            }
+        }
     }
 
     public String PrintValue()
@@ -98,6 +119,7 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
+        @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch(msg.what){

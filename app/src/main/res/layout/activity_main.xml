@@ -48,12 +48,14 @@
                 android:layout_weight="49.5">
 
                 <TextView
+                    android:id="@+id/textView1"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
                     android:text="태양광 발전량"
-                    android:textSize="30dp" />
+                    android:textSize="30dp"
+                    android:onClick="onClickView"/>
 
             </LinearLayout>
 
@@ -69,12 +71,14 @@
                 android:layout_weight="49.5">
 
                 <TextView
+                    android:id="@+id/textView2"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
                     android:text="물탱크"
-                    android:textSize="40dp" />
+                    android:textSize="40dp"
+                    android:onClick="onClickView"/>
             </LinearLayout>
             //물탱크
         </LinearLayout>
