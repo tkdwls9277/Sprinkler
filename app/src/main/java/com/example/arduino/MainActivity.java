@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     public void onClickView(View v) { // 레이아웃 전환 테스트용
         switch (v.getId()) {
             case R.id.textView1:{
-                Intent intent = new Intent(this, SolarActivityTest.class);
+                Intent intent = new Intent(this, SoilActivityTest.class);
                 startActivity(intent);
             }
             case R.id.textView2:{
