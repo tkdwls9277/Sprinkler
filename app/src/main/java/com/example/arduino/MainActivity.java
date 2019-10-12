@@ -7,20 +7,17 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
 import android.widget.TextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
-
-    private TextView tvSolar; // 레이아웃 전환 테스트용
-    private TextView tvWater; // 레이아웃 전환 테스트용
 
     double lat, lon;//위도 경도 값
     private GpsInfo gps;
@@ -47,7 +44,11 @@ public class MainActivity extends AppCompatActivity {
         lat = gps.getLatitude();
         lon = gps.getLongitude();
         callPermission();  // 권한 요청을 해야 함
-        getWeatherData(lat, lon);
+        String url = "https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon="+lon+
+                "&units=metric&appid=25101ddb40fe8f611b992f17f1d60b23";
+        Log.e("url=",url);
+        WeatherTask weatherTask = new WeatherTask(url);
+        weatherTask.execute();
     }
 
     public void onRequestPermissionsResult(int requestCode, String[] permissions,
@@ -91,38 +92,36 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-    private void getWeatherData(double lat, double lng) {
-        String url = "http://api.openweathermap.org/data/2.5/forecast/daily?lat="
-                + lat + "&lon=" + lng + "&units=metric&appid=25101ddb40fe8f611b992f17f1d60b23";
-        new weatherTask().execute();
-
-    }
-
-    class weatherTask extends AsyncTask<String, Void, String> {
+    class WeatherTask extends AsyncTask<String, Void, String> {
+        private String url;
+        public WeatherTask(String url){
+            this.url=url;
+        }
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-
-            /* Showing the ProgressBar, Making the main design GONE */
-            findViewById(R.id.loader).setVisibility(View.VISIBLE);
-            findViewById(R.id.mainContainer).setVisibility(View.GONE);
-            findViewById(R.id.errorText).setVisibility(View.GONE);
             Log.e("onPreExecute","in");
         }
 
         protected String doInBackground(String... args) {
-            String url = "http://api.openweathermap.org/data/2.5/forecast/daily?lat="
-                    + lat + "&lon=" + lon + "&units=metric&appid=25101ddb40fe8f611b992f17f1d60b23";
+            String result = null;
             Log.e("doInBackground","in");
-            return url;
+            RequestHttpURLConnection requestHttpURLConnection=new RequestHttpURLConnection();
+            try {
+                Log.e("doin result","전");
+                result=requestHttpURLConnection.request(url);
+                Log.e("doin result","후");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return result;
         }
 
         @Override
         protected void onPostExecute(String result) {
 
-
             try {
+                Log.e("try","in");
                 JSONObject jsonObj = new JSONObject(result);
                 JSONObject main = jsonObj.getJSONObject("main");
                 JSONObject sys = jsonObj.getJSONObject("sys");
@@ -144,22 +143,12 @@ public class MainActivity extends AppCompatActivity {
 
                 String address = jsonObj.getString("name") + ", " + sys.getString("country");
 
-
-                /* Populating extracted data into our views */
-                Weather.setText("address = "+address+"temp = "+temp);
-
-                /* Views populated, Hiding the loader, Showing the main design */
-                findViewById(R.id.loader).setVisibility(View.GONE);
-                findViewById(R.id.mainContainer).setVisibility(View.VISIBLE);
-
-                Log.e("onPostExecute","in");
+                Weather.setText("main="+main+"wind="+wind+"weather="+weather);
 
             } catch (JSONException e) {
-                findViewById(R.id.loader).setVisibility(View.GONE);
-                findViewById(R.id.errorText).setVisibility(View.VISIBLE);
-                Log.e("onPostExecute","catch");
+                Log.e("JSONException","e");
+                e.printStackTrace();
             }
-
         }
     }
 
