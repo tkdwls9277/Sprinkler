@@ -22,12 +22,37 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/Weather"
+                android:id="@+id/temp"
                 android:layout_width="match_parent"
                 android:layout_height="365dp"
                 android:gravity="center"
                 android:textSize="40dp"
-                android:hint="weather"/>
+                android:hint="temp"
+                android:layout_weight="1"/>
+            <TextView
+                android:id="@+id/date"
+                android:layout_width="match_parent"
+                android:layout_height="365dp"
+                android:gravity="center"
+                android:textSize="40dp"
+                android:hint="date"
+                android:layout_weight="1"/>
+            <TextView
+                android:id="@+id/city"
+                android:layout_width="match_parent"
+                android:layout_height="365dp"
+                android:gravity="center"
+                android:textSize="40dp"
+                android:hint="city"
+                android:layout_weight="1"/>
+            <TextView
+                android:id="@+id/humi"
+                android:layout_width="match_parent"
+                android:layout_height="365dp"
+                android:gravity="center"
+                android:textSize="40dp"
+                android:hint="humi"
+                android:layout_weight="1"/>
 
 
         </LinearLayout>

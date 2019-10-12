@@ -1,19 +1,7 @@
 package com.example.arduino;
 
-import android.content.ContentValues;
-import android.util.Log;
-
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
-
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
-
 public class RequestHttpURLConnection {
-    private HttpURLConnection urlconn=null;
+    /*private HttpURLConnection urlconn=null;
     public String request(String _url) throws IOException, XmlPullParserException {
         URL url=new URL(_url);
         ArrayList<ContentValues> mTotalValue = new ArrayList<ContentValues>();
@@ -65,6 +53,6 @@ public class RequestHttpURLConnection {
 
         Log.e("RequestHttpURLConnection",urlconn.toString());
         return mTotalValue;
-    }
+    }*/
 
 }

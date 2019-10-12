@@ -2,20 +2,25 @@ package com.example.arduino;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
+import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,13 +32,16 @@ public class MainActivity extends AppCompatActivity {
     private boolean isAccessCoarseLocation = false;
     private boolean isPermission = false;
 
-    TextView Weather;
+    TextView temp,city,date,humi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Weather = findViewById(R.id.Weather);
+        temp = (TextView)findViewById(R.id.temp);
+        city = (TextView)findViewById(R.id.city);
+        date = (TextView)findViewById(R.id.date);
+        humi = (TextView)findViewById(R.id.humi);
     }
 
     @Override
@@ -47,8 +55,52 @@ public class MainActivity extends AppCompatActivity {
         String url = "https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon="+lon+
                 "&units=metric&appid=25101ddb40fe8f611b992f17f1d60b23";
         Log.e("url=",url);
-        WeatherTask weatherTask = new WeatherTask(url);
-        weatherTask.execute();
+
+        fine_weather(url);
+    }
+
+    public void fine_weather(String url) {
+        JsonObjectRequest jor = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try{
+                    JSONObject main_object=response.getJSONObject("main");
+                    JSONArray array = response.getJSONArray("weather");
+                    JSONObject object=array.getJSONObject(0);
+                    String mtemp = String.valueOf(main_object.getDouble("temp"));
+                    String mdes = object.getString("description");
+                    String mcity = response.getString("name");
+
+                    temp.setText(mtemp);
+                    city.setText(mcity);
+                    humi.setText(mdes);
+
+                    Calendar calendar = Calendar.getInstance();
+                    SimpleDateFormat sdf=new SimpleDateFormat("EEEE-MM-DD");
+                    String formatted_date=sdf.format(calendar.getTime());
+
+                    date.setText(formatted_date);
+
+                    double temp_int = Double.parseDouble(mtemp);
+                    double centi = (temp_int-32)/1.8000;
+                    centi=Math.round(centi);
+                    int i=(int)centi;
+                    temp.setText(String.valueOf(i));
+
+                }catch (JSONException e){
+                    e.printStackTrace();
+                }
+
+            }
+        }, new Response.ErrorListener(){
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        RequestQueue queue= Volley.newRequestQueue(this);
+        queue.add(jor);
     }
 
     public void onRequestPermissionsResult(int requestCode, String[] permissions,
@@ -92,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    class WeatherTask extends AsyncTask<String, Void, String> {
+  /*  class WeatherTask extends AsyncTask<String, Void, String> {
         private String url;
         public WeatherTask(String url){
             this.url=url;
@@ -112,6 +164,8 @@ public class MainActivity extends AppCompatActivity {
                 result=requestHttpURLConnection.request(url);
                 Log.e("doin result","후");
             } catch (IOException e) {
+                e.printStackTrace();
+            } catch (XmlPullParserException e) {
                 e.printStackTrace();
             }
             return result;
@@ -150,6 +204,6 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
-    }
+    }*/
 
 }
