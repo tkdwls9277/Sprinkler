@@ -73,6 +73,8 @@ public class MainActivity extends AppCompatActivity {
 
                     temp.setText(mtemp);
                     city.setText(mcity);
+                    WeatherHangeul weatherHangeul = new WeatherHangeul(mdes);
+                    mdes=weatherHangeul.getWeather();
                     humi.setText(mdes);
 
                     Calendar calendar = Calendar.getInstance();
@@ -85,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
                     double centi = (temp_int-32)/1.8000;
                     centi=Math.round(centi);
                     int i=(int)centi;
-                    temp.setText(String.valueOf(i));
+                    temp.setText(String.valueOf(i)+"°C");
 
                 }catch (JSONException e){
                     e.printStackTrace();
@@ -143,67 +145,5 @@ public class MainActivity extends AppCompatActivity {
             isPermission = true;
         }
     }
-
-  /*  class WeatherTask extends AsyncTask<String, Void, String> {
-        private String url;
-        public WeatherTask(String url){
-            this.url=url;
-        }
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            Log.e("onPreExecute","in");
-        }
-
-        protected String doInBackground(String... args) {
-            String result = null;
-            Log.e("doInBackground","in");
-            RequestHttpURLConnection requestHttpURLConnection=new RequestHttpURLConnection();
-            try {
-                Log.e("doin result","전");
-                result=requestHttpURLConnection.request(url);
-                Log.e("doin result","후");
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (XmlPullParserException e) {
-                e.printStackTrace();
-            }
-            return result;
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-
-            try {
-                Log.e("try","in");
-                JSONObject jsonObj = new JSONObject(result);
-                JSONObject main = jsonObj.getJSONObject("main");
-                JSONObject sys = jsonObj.getJSONObject("sys");
-                JSONObject wind = jsonObj.getJSONObject("wind");
-                JSONObject weather = jsonObj.getJSONArray("weather").getJSONObject(0);
-
-                Long updatedAt = jsonObj.getLong("dt");
-                String updatedAtText = "Updated at: " + new SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.ENGLISH).format(new Date(updatedAt * 1000));
-                String temp = main.getString("temp") + "°C";
-                String tempMin = "Min Temp: " + main.getString("temp_min") + "°C";
-                String tempMax = "Max Temp: " + main.getString("temp_max") + "°C";
-                String pressure = main.getString("pressure");
-                String humidity = main.getString("humidity");
-
-                Long sunrise = sys.getLong("sunrise");
-                Long sunset = sys.getLong("sunset");
-                String windSpeed = wind.getString("speed");
-                String weatherDescription = weather.getString("description");
-
-                String address = jsonObj.getString("name") + ", " + sys.getString("country");
-
-                Weather.setText("main="+main+"wind="+wind+"weather="+weather);
-
-            } catch (JSONException e) {
-                Log.e("JSONException","e");
-                e.printStackTrace();
-            }
-        }
-    }*/
 
 }
