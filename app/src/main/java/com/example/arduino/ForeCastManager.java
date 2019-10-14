@@ -12,38 +12,36 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class ForeCastManager extends Thread{
+public class ForeCastManager extends Thread {
 
-    String lon,lat;
+    String lon, lat;
 
     ArrayList<ContentValues> mWeatehr;
     MainActivity mContext;
-    public ArrayList<ContentValues> getmWeather()
-    {
+
+    public ArrayList<ContentValues> getmWeather() {
         return mWeatehr;
     }
 
-    public ForeCastManager(String lon, String lat,MainActivity mContext)
-    {
-        this.lon = lon ; this.lat = lat;
+    public ForeCastManager(String lon, String lat, MainActivity mContext) {
+        this.lon = lon;
+        this.lat = lat;
         this.mContext = mContext;
     }
 
 
-
-    public ArrayList<ContentValues> GetOpenWeather(String lon, String lat)
-    {
+    public ArrayList<ContentValues> GetOpenWeather(String lon, String lat) {
 
         ArrayList<ContentValues> mTotalValue = new ArrayList<ContentValues>();
         String key = "25101ddb40fe8f611b992f17f1d60b23";
-        try{
-            URL url = new URL("http://api.openweathermap.org/data/2.5/forecast/daily?"+
+        try {
+            URL url = new URL("http://api.openweathermap.org/data/2.5/forecast/daily?" +
                     "&APPID=" + key +
-                    "&lat="+lat+
-                    "&lon="+lon+
+                    "&lat=" + lat +
+                    "&lon=" + lon +
                     "&mode=xml" +
-                    "&units=metric"+
-                    "&cnt=" + 15            );
+                    "&units=metric" +
+                    "&cnt=" + 15);
 
             XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
             // 위에서 생성된 URL을 통하여 서버에 요청하면 결과가 XML Resource로 전달됨
@@ -53,37 +51,37 @@ public class ForeCastManager extends Thread{
             // 파서를 통하여 각 요소들의 이벤트성 처리를 반복수행
             int parserEvent = parser.getEventType();
             while (parserEvent != XmlPullParser.END_DOCUMENT) {
-                if(parserEvent == XmlPullParser.START_TAG  && parser.getName().equals("time")){
+                if (parserEvent == XmlPullParser.START_TAG && parser.getName().equals("time")) {
                     //시작태그의 이름을 알아냄
                     int checkStartTag = parserEvent;
                     ContentValues mContent = new ContentValues();
 
-                    for( ; ; ) {
-                        if (checkStartTag == XmlPullParser.START_TAG  && parser.getName().equals("time")) {
+                    for (; ; ) {
+                        if (checkStartTag == XmlPullParser.START_TAG && parser.getName().equals("time")) {
                             mContent.put("day", parser.getAttributeValue(null, "day"));
-                        } else if (checkStartTag == XmlPullParser.START_TAG  && parser.getName().equals("symbol")) {
+                        } else if (checkStartTag == XmlPullParser.START_TAG && parser.getName().equals("symbol")) {
                             mContent.put("weather_Name", parser.getAttributeValue(null, "name"));
                             mContent.put("weather_Number", parser.getAttributeValue(null, "number"));
-                        } else if (checkStartTag == XmlPullParser.START_TAG  &&
+                        } else if (checkStartTag == XmlPullParser.START_TAG &&
                                 parser.getName().equals("precipitation")) {
                             mContent.put("weather_Much", parser.getAttributeValue(null, "value"));
                             mContent.put("weather_Type", parser.getAttributeValue(null, "type"));
-                        } else if (checkStartTag == XmlPullParser.START_TAG  &&
+                        } else if (checkStartTag == XmlPullParser.START_TAG &&
                                 parser.getName().equals("windDirection")) {
                             mContent.put("wind_Direction", parser.getAttributeValue(null, "name"));
                             mContent.put("wind_SortNumber", parser.getAttributeValue(null, "deg"));
                             mContent.put("wind_SortCode", parser.getAttributeValue(null, "code"));
-                        } else if (checkStartTag == XmlPullParser.START_TAG  && parser.getName().equals("windSpeed")) {
+                        } else if (checkStartTag == XmlPullParser.START_TAG && parser.getName().equals("windSpeed")) {
                             mContent.put("wind_Speed", parser.getAttributeValue(null, "mps"));
                             mContent.put("wind_Name", parser.getAttributeValue(null, "name"));
-                        } else if (checkStartTag == XmlPullParser.START_TAG  &&
+                        } else if (checkStartTag == XmlPullParser.START_TAG &&
                                 parser.getName().equals("temperature")) {
                             mContent.put("temp_Min", parser.getAttributeValue(null, "min"));
                             mContent.put("temp_Max", parser.getAttributeValue(null, "max"));
-                        } else if (checkStartTag == XmlPullParser.START_TAG  && parser.getName().equals("humidity")) {
+                        } else if (checkStartTag == XmlPullParser.START_TAG && parser.getName().equals("humidity")) {
                             mContent.put("humidity", parser.getAttributeValue(null, "value"));
                             mContent.put("humidity_unit", parser.getAttributeValue(null, "unit"));
-                        } else if (checkStartTag == XmlPullParser.START_TAG  && parser.getName().equals("clouds")) {
+                        } else if (checkStartTag == XmlPullParser.START_TAG && parser.getName().equals("clouds")) {
                             mContent.put("Clouds_Sort", parser.getAttributeValue(null, "value"));
                             mContent.put("Clouds_Value", parser.getAttributeValue(null, "all"));
                             mContent.put("Clouds_Per", parser.getAttributeValue(null, "unit"));
@@ -108,14 +106,15 @@ public class ForeCastManager extends Thread{
     }
 
 
-
-    @Override    public void run() {
+    @Override
+    public void run() {
         super.run();
         if (android.os.Build.VERSION.SDK_INT > 9) {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
         }
-        mWeatehr = GetOpenWeather(lon,lat);
-        mContext.handler.sendEmptyMessage(mContext.THREAD_HANDLER_SUCCESS_INFO);
+        mWeatehr = GetOpenWeather(lon, lat);
+        // mContext.handler.sendEmptyMessage(mContext.THREAD_HANDLER_SUCCESS_INFO);
         //Thread 작업 종료, UI 작업을 위해 MainHandler에 Message보냄    }
     }
+}
