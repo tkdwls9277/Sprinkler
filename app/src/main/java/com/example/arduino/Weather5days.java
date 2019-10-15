@@ -22,7 +22,7 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-public class MainActivity extends AppCompatActivity {
+public class Weather5days extends AppCompatActivity {
 
     double lat, lon;//위도 경도 값
     private GpsInfo gps;
@@ -52,12 +52,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        gps = new GpsInfo(MainActivity.this);
+        gps = new GpsInfo(Weather5days.this);
         lat = gps.getLatitude();
         lon = gps.getLongitude();
         callPermission();  // 권한 요청을 해야 함
-        String url = "https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon="+lon+
-                "&units=metric&appid=25101ddb40fe8f611b992f17f1d60b23";
+        String url = "https://api.openweathermap.org/data/2.5/forecast?"+
+                "lat=" + lat +
+                "&lon="+ lon +
+                "&appid=25101ddb40fe8f611b992f17f1d60b23" +
+                "&cnt=" + 18;
         Log.e("url=",url);
 
         fine_weather(url);
@@ -68,9 +71,19 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(JSONObject response) {
                 try{
-                    JSONObject main_object=response.getJSONObject("main");
+                    JSONArray lists=response.getJSONArray("list");
+                    JSONObject today=lists.getJSONObject(0);
+                    JSONObject tomorrow=lists.getJSONObject(8);
+                    JSONObject tomorrow2=lists.getJSONObject(16);
+                    String todayweather=String.valueOf(today.getJSONArray("weather").getJSONObject(0).getJSONObject("id"));
+                    String tomorrowweather=String.valueOf(tomorrow.getJSONArray("weather").getJSONObject(0).getJSONObject("id"));
+                    String tomorrow2weather=String.valueOf(tomorrow2.getJSONArray("weather").getJSONObject(0).getJSONObject("id"));
+
                     JSONArray array = response.getJSONArray("weather");
+
+                    JSONObject main_object=response.getJSONObject("main");
                     JSONObject object=array.getJSONObject(0);
+
                     JSONObject wind_object=response.getJSONObject("wind");
                     String wind_speed=String.valueOf(wind_object.getDouble("speed"));
                     String mtemp = String.valueOf(main_object.getDouble("temp"));

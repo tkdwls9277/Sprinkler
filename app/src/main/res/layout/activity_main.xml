@@ -25,8 +25,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:hint="Sprinkler Solar Cell(nav bar)"
-                android:textSize="20dp" />
+                android:text="Sprinkler Solar Cell(nav bar)"
+                android:textSize="20dp"
+                android:textColor="#ffffff"/>
         </LinearLayout>
 
         <View
@@ -45,13 +46,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="도시"
-                android:textSize="30dp" />
+                android:textSize="30dp"
+                android:textColor="#ffffff"
+                android:gravity="center"/>
             <TextView
                 android:id="@+id/date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="날짜"
-                android:textSize="20dp" />
+                android:textSize="20dp"
+                android:textColor="#ffffff"
+                android:gravity="center"/>
 
 
             <LinearLayout
@@ -67,133 +72,60 @@
                     android:hint="온도"
                     android:textSize="50dp"
                     android:gravity="center"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:paddingRight="20dp"
+                    android:textColor="#ffffff"
+                    android:layout_marginBottom="40dp"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
-                    android:paddingLeft="20dp">
+                    android:paddingLeft="20dp"
+                    android:background="#3CF1EBF1"
+                    android:layout_marginBottom="40dp">
 
                     <TextView
-                        android:id="@+id/humi"
+                        android:id="@+id/weather"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="날씨"
-                        android:textSize="25dp" />
+                        android:textSize="25dp"
+                        android:layout_marginBottom="10dp"
+                        android:textColor="#ffffff"/>
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:weightSum="3">
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:background="#3CF1EBF1"
-                            android:gravity="center"
-                            android:orientation="vertical"
-                            android:padding="8dp">
-
-                            <ImageView
-                                android:layout_width="25dp"
-                                android:layout_height="25dp"
-                                android:src="@drawable/pressure"
-                                android:tint="#FFFFFF" />
-
-                            <Space
-                                android:layout_width="wrap_content"
-                                android:layout_height="5dp" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Pressure"
-                                android:textSize="12dp" />
-
-                            <TextView
-                                android:id="@+id/pressure"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="06:40 AM"
-                                android:textSize="14dp" />
-                        </LinearLayout>
-
-                        <Space
-                            android:layout_width="10dp"
-                            android:layout_height="wrap_content" />
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:background="#3CF1EBF1"
-                            android:gravity="center"
-                            android:orientation="vertical"
-                            android:padding="8dp">
-
-                            <ImageView
-                                android:layout_width="25dp"
-                                android:layout_height="25dp"
-                                android:src="@drawable/humidity"
-                                android:tint="#FFFFFF" />
-
-                            <Space
-                                android:layout_width="wrap_content"
-                                android:layout_height="5dp" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Humidity"
-                                android:textSize="12dp" />
-
-                            <TextView
-                                android:id="@+id/humidity"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="06:40 AM"
-                                android:textSize="14dp" />
-                        </LinearLayout>
-
-                        <Space
-                            android:layout_width="10dp"
-                            android:layout_height="wrap_content" />
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:background="#3CF1EBF1"
-                            android:gravity="center"
-                            android:orientation="vertical"
-                            android:padding="8dp">
-
-                            <ImageView
-                                android:layout_width="25dp"
-                                android:layout_height="25dp"
-                                android:src="@drawable/wind"
-                                android:tint="#FFFFFF" />
-
-                            <Space
-                                android:layout_width="wrap_content"
-                                android:layout_height="5dp" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Wind"
-                                android:textSize="12dp" />
-
-                            <TextView
-                                android:id="@+id/wind"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="06:40 AM"
-                                android:textSize="14dp" />
-                        </LinearLayout>
-
+                        android:layout_marginBottom="10dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:text="습도 : "
+                            android:textColor="#ffffff"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:id="@+id/humidity"
+                            android:text="defalt"
+                            android:textColor="#ffffff"/>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="30dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:text="바람 : "
+                            android:textColor="#ffffff"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:id="@+id/wind"
+                            android:text="defalt"
+                            android:textColor="#ffffff"/>
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
@@ -221,8 +153,9 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="태양광 발전량"
-                    android:textSize="30dp" />
+                    android:text="토양 수분량"
+                    android:textSize="30dp"
+                    android:textColor="#ffffff"/>
 
             </LinearLayout>
 
@@ -234,16 +167,25 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="49.5">
+                android:layout_weight="49.5"
+                android:orientation="vertical">
 
-                <TextView
+                <ImageView
                     android:id="@+id/textView2"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="물탱크"
-                    android:textSize="40dp" />
+                    android:src="@drawable/image"
+                    android:layout_margin="30dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="수위량"
+                    android:textSize="30dp"
+                    android:layout_gravity="center"
+                    android:textColor="#ffffff"/>
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
