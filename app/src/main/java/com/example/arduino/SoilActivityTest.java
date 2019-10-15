@@ -3,12 +3,14 @@ package com.example.arduino;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -18,11 +20,14 @@ import java.net.UnknownHostException;
 
 public class SoilActivityTest extends AppCompatActivity {
 
-    private TextView soilValueView;
+    private String serverIP = "117.16.152.128"; // 추후에 변경
+    private int serverPort = 8080; // 추후에 변경
 
+    private TextView soilValueView;
     private TextView connStatusView;
     private TextView ipNumberView;
     private TextView portNumberView;
+    private Button updateBtn;
     private Socket socket;
     private boolean isConnected = false;
 
@@ -35,26 +40,37 @@ public class SoilActivityTest extends AppCompatActivity {
         setContentView(R.layout.activity_soil);
 
         soilValueView = findViewById(R.id.soilValueView);
+        connStatusView = findViewById(R.id.sConnStatusView);
+        ipNumberView = findViewById(R.id.sIpNumberView);
+        portNumberView = findViewById(R.id.sPortNumberView);
+        updateBtn = findViewById(R.id.sUpdateButton);
 
-        connStatusView = findViewById(R.id.connStatusView);
-        ipNumberView = findViewById(R.id.ipNumberView);
-        portNumberView = findViewById(R.id.portNumberView);
+        updateBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isConnected)
+                    new Thread(new SenderThread("S")).start();
+                else
+                    Toast.makeText(v.getContext(), "Not Connected", Toast.LENGTH_LONG).show();
+            }
+        });
 
-        new Thread(new ConnectThread("192.168.0.7", 8090)).start();
+        new Thread(new ConnectThread(serverIP, serverPort)).start(); // 117.16.152.128
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
-        isConnected = false;
+        new Thread(new SenderThread("E")).start();
+
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        new Thread(new SenderThread("E")).start();
 
-        isConnected = false;
     }
     private class ConnectThread implements Runnable {
 
@@ -144,7 +160,7 @@ public class SoilActivityTest extends AppCompatActivity {
                     }
 
                     final String recvMessage = bufferedReader.readLine();
-                    Log.e("ReceiverThread", recvMessage);
+                    // Log.e("ReceiverThread", recvMessage);
                     if (recvMessage != null) {
                         runOnUiThread(new Runnable() {
                             @Override
@@ -153,64 +169,20 @@ public class SoilActivityTest extends AppCompatActivity {
                             }
                         });
                     }
-                    /*
-                    int readBufferPosition = 0;
-                    byte[] readBuffer = new byte[1024];
 
-                    int byteAvailable = inputStream.available();
-
-                    Log.e("ReceiverThread", "while " + byteAvailable);
-                    if (byteAvailable > 0) {
-                        byte[] bytes = new byte[byteAvailable];
-                        inputStream.read(bytes); // 입력 스트림에서 값을 받아와 bytes 배열에 저장하는 것 같다.
-
-                        for (int i = 0; i < byteAvailable; i++) {
-                            byte tempByte = bytes[i];
-
-                            Log.e("ReceiverThread", "" + tempByte);
-                            if (tempByte == '\n') { // bytes 배열의 문자를 하나씩 읽어서 개행문자가 나오면
-                                byte[] encodedBytes = new byte[readBufferPosition];
-                                System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length); // readBuffer 배열을 encodedBytes 배열로 복사
-
-                                final String text = new String(encodedBytes, "US-ASCII");
-                                // 현재 지금 어떤 값이 넘어오는 지 정확하게 알지 못하기 때문에 일단 US-ASCII로 인코딩
-                                readBufferPosition = 0;
-                                Log.e("ReceiverThread", text);
-                                if (!(text == "y" || text == "n"))
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            // 추후에 UI에 출력할 형식을 결정해서 이 부분을 수정하도록 하자.
-
-                                            soilValueView.setText(text);
-                                            Log.e("ReceiverThread", "runOnUiThread");
-                                        }
-                                    });
-                                else {
-                                    Log.e("ReceiverThread", "message is " + text);
-                                }
-                            } else { // 개행 문자가 아닐 경우
-                                readBuffer[readBufferPosition++] = tempByte;
-                            }
-                        }
-                    }
-
-                    if (!socket.isConnected() || inputStream.read() == -1) {
-                        isConnected = false;
-                        Log.e("ReceiverThread", "disconnected");
-                    } */
                 }
-
+                /*
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     Log.e("ReceiverThread", e.getMessage());
                 }
-
+                */
             }
             catch (IOException e) {
                 Log.e("ReceiverThread", e.getMessage());
             }
+
 
             if (socket != null) {
                 try {
@@ -230,5 +202,33 @@ public class SoilActivityTest extends AppCompatActivity {
             }
         }
 
+    }
+
+    private class SenderThread implements Runnable {
+
+        private String msg;
+
+        public SenderThread (String msg) {
+            this.msg = msg;
+        }
+        @Override
+        public void run() {
+            if (isConnected && socket != null){
+                try {
+                    PrintWriter sendSignal = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8")), true);
+                    sendSignal.println(msg);
+                    sendSignal.flush();
+
+                }
+                catch (IOException e) {
+                    Log.e("SenderThread", e.getMessage());
+                }
+            }
+            else {
+                Log.e("SenderThread", "wtf"); // 뒤로가기 버튼을 누르면 (종료코드) 여기로 온다 왜 그럴까
+            }
+
+            if (msg == "E") isConnected = false; // 종료 코드
+        }
     }
 }

@@ -71,8 +71,8 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         try {
-                            String serverIP = "192.168.0.7"; // 추후에 변경
-                            int serverPort = 8090; // 추후에 변경
+                            String serverIP = "117.16.152.128"; // 추후에 변경
+                            int serverPort = 8080; // 추후에 변경
                             socket = new Socket(serverIP, serverPort);
                         }
                         catch (UnknownHostException e) {
@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
                         if (socket != null){
                             try {
                                 PrintWriter sendSignal = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8")), true);
-                                sendSignal.println("A"); // 이 괄호 안에 명령어 다시 정하자
+                                sendSignal.println("y"); // 이 괄호 안에 명령어 다시 정하자
                                 sendSignal.flush();
                                 // 소켓 닫는 코드도 이 부분 지나서 추가하자.
 
