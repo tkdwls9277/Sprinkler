@@ -2,6 +2,7 @@ package com.example.arduino;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -44,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
 
     private Button switchBtn; // 온오프 버튼 테스트용
 
+    private Socket socket;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,10 +65,9 @@ public class MainActivity extends AppCompatActivity {
                 Thread senderThread = new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        Socket socket = null;
                         try {
-                            String serverIP = ""; // 추후에 변경
-                            int serverPort = 0; // 추후에 변경
+                            String serverIP = "192.168.0.7"; // 추후에 변경
+                            int serverPort = 8090; // 추후에 변경
                             socket = new Socket(serverIP, serverPort);
                         }
                         catch (UnknownHostException e) {
@@ -78,9 +80,22 @@ public class MainActivity extends AppCompatActivity {
                         if (socket != null){
                             try {
                                 PrintWriter sendSignal = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8")), true);
-                                sendSignal.println();
-                                // 명령어 정해서 괄호안에 추가하고
+                                sendSignal.println("A"); // 이 괄호 안에 명령어 다시 정하자
+                                sendSignal.flush();
                                 // 소켓 닫는 코드도 이 부분 지나서 추가하자.
+
+                            }
+                            catch (IOException e) {
+                                Log.e("SenderThread", e.getMessage());
+                            }
+                        }
+                        else {
+                            Log.e("SenderThread", "Creating Socket is failed");
+                        }
+
+                        if (socket != null) {
+                            try {
+                                socket.close();
                             }
                             catch (IOException e) {
                                 Log.e("SenderThread", e.getMessage());
@@ -89,6 +104,8 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
                 senderThread.start();
+                switchBtn.setBackgroundColor(Color.RED);
+                switchBtn.setBackgroundResource(R.drawable.button_red);
             }
         });
     }
