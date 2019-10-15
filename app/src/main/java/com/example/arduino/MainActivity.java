@@ -3,6 +3,7 @@ package com.example.arduino;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -97,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
                 senderThread.start();
-                switchBtn.setBackgroundColor(Color.RED);
+                switchBtn.setBackgroundResource(R.drawable.button_red);
             }
         });
 
