@@ -153,52 +153,7 @@ public class SoilActivityTest extends AppCompatActivity {
                             }
                         });
                     }
-                    /*
-                    int readBufferPosition = 0;
-                    byte[] readBuffer = new byte[1024];
 
-                    int byteAvailable = inputStream.available();
-
-                    Log.e("ReceiverThread", "while " + byteAvailable);
-                    if (byteAvailable > 0) {
-                        byte[] bytes = new byte[byteAvailable];
-                        inputStream.read(bytes); // 입력 스트림에서 값을 받아와 bytes 배열에 저장하는 것 같다.
-
-                        for (int i = 0; i < byteAvailable; i++) {
-                            byte tempByte = bytes[i];
-
-                            Log.e("ReceiverThread", "" + tempByte);
-                            if (tempByte == '\n') { // bytes 배열의 문자를 하나씩 읽어서 개행문자가 나오면
-                                byte[] encodedBytes = new byte[readBufferPosition];
-                                System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length); // readBuffer 배열을 encodedBytes 배열로 복사
-
-                                final String text = new String(encodedBytes, "US-ASCII");
-                                // 현재 지금 어떤 값이 넘어오는 지 정확하게 알지 못하기 때문에 일단 US-ASCII로 인코딩
-                                readBufferPosition = 0;
-                                Log.e("ReceiverThread", text);
-                                if (!(text == "y" || text == "n"))
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            // 추후에 UI에 출력할 형식을 결정해서 이 부분을 수정하도록 하자.
-
-                                            soilValueView.setText(text);
-                                            Log.e("ReceiverThread", "runOnUiThread");
-                                        }
-                                    });
-                                else {
-                                    Log.e("ReceiverThread", "message is " + text);
-                                }
-                            } else { // 개행 문자가 아닐 경우
-                                readBuffer[readBufferPosition++] = tempByte;
-                            }
-                        }
-                    }
-
-                    if (!socket.isConnected() || inputStream.read() == -1) {
-                        isConnected = false;
-                        Log.e("ReceiverThread", "disconnected");
-                    } */
                 }
 
                 try {
