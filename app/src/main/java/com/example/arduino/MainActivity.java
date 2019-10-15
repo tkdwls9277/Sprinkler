@@ -6,8 +6,20 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -34,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
 
     TextView temp,city,date,weather,humidity,wind;
 
+    private Button switchBtn; // 온오프 버튼 테스트용
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,7 +59,42 @@ public class MainActivity extends AppCompatActivity {
         humidity = (TextView)findViewById(R.id.humidity);
         wind=(TextView)findViewById(R.id.wind);
 
+        switchBtn = findViewById(R.id.switchBtn);
+        switchBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Thread senderThread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Socket socket = null;
+                        try {
+                            String serverIP = ""; // 추후에 변경
+                            int serverPort = 0; // 추후에 변경
+                            socket = new Socket(serverIP, serverPort);
+                        }
+                        catch (UnknownHostException e) {
+                            Log.e("SenderThread", e.getMessage());
+                        }
+                        catch (IOException e) {
+                            Log.e("SenderThread", e.getMessage());
+                        }
 
+                        if (socket != null){
+                            try {
+                                PrintWriter sendSignal = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8")), true);
+                                sendSignal.println();
+                                // 명령어 정해서 괄호안에 추가하고
+                                // 소켓 닫는 코드도 이 부분 지나서 추가하자.
+                            }
+                            catch (IOException e) {
+                                Log.e("SenderThread", e.getMessage());
+                            }
+                        }
+                    }
+                });
+                senderThread.start();
+            }
+        });
     }
 
     @Override
@@ -205,5 +254,4 @@ public class MainActivity extends AppCompatActivity {
             isPermission = true;
         }
     }
-
 }
