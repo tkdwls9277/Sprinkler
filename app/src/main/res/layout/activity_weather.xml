@@ -8,15 +8,15 @@
 
     <TextView android:id="@+id/Txt1" android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="lat 위치가 나올 텍스트"/>
+        android:text="오늘 날씨"/>
 
     <TextView android:id="@+id/Txt2" android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="lon 위치가 나올 텍스트"/>
-    <Button
-        android:layout_width="wrap_content"
+        android:text="내일 날씨"/>
+
+    <TextView android:id="@+id/Txt3" android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/Btn"
-        android:text="button"/>
+        android:text="이틀후 날씨"/>
+
 
 </LinearLayout>

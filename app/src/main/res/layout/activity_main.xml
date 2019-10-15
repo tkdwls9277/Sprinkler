@@ -172,7 +172,6 @@
                     android:layout_gravity="center"
                     android:textColor="#ffffff"/>
             </LinearLayout>
-            //물탱크
         </LinearLayout>
     </LinearLayout>
 
@@ -186,7 +185,4 @@
         android:elevation="0dp"
         android:text="ON/OFF"
         app:layout_constraintEnd_toStartOf="@+id/linearLayout" />
-    app:layout_constraintEnd_toStartOf="@+id/linearLayout"
-    android:text="ON / OFF"
-    />
 </RelativeLayout>

@@ -3,6 +3,7 @@ package com.example.arduino;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -58,6 +59,10 @@ public class MainActivity extends AppCompatActivity {
         humidity = (TextView)findViewById(R.id.humidity);
         wind=(TextView)findViewById(R.id.wind);
 
+        gps = new GpsInfo(MainActivity.this);
+        MyAsyncTask myAsyncTask=new MyAsyncTask();
+        myAsyncTask.execute();
+
         switchBtn = findViewById(R.id.switchBtn);
         switchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -110,26 +115,13 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
 
-        gps = new GpsInfo(MainActivity.this);
-        lat = gps.getLatitude();
-        lon = gps.getLongitude();
-        callPermission();  // 권한 요청을 해야 함
-        String url = "https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon="+lon+
-                "&units=metric&appid=25101ddb40fe8f611b992f17f1d60b23";
-        Log.e("url=",url);
-
-        fine_weather(url);
-    }
-
-    public void fine_weather(String url) {
+    private void fine_weather(String url) {
         JsonObjectRequest jor = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try{
+                    Log.e("대충","try");
                     JSONObject main_object=response.getJSONObject("main");
                     JSONArray array = response.getJSONArray("weather");
                     JSONObject object=array.getJSONObject(0);
@@ -149,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
                     wind.setText(wind_speed);
 
                     Calendar calendar = Calendar.getInstance();
-                    SimpleDateFormat sdf=new SimpleDateFormat("EEEE-MM-DD");
+                    SimpleDateFormat sdf = new SimpleDateFormat("EEEE-MM-DD");
                     String formatted_date=sdf.format(calendar.getTime());
 
                     date.setText(formatted_date);
@@ -169,66 +161,15 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onErrorResponse(VolleyError error) {
-
+                Log.e("onError","Response");
             }
         });
+        Log.e("queue","add");
         RequestQueue queue= Volley.newRequestQueue(this);
         queue.add(jor);
     }
 
-    public void fine_weather_5day(String url) {
-        JsonObjectRequest jor = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                try{
-                    JSONObject main_object=response.getJSONObject("main");
-                    JSONArray array = response.getJSONArray("List");
-                    JSONObject object=array.getJSONObject(0);
-                    JSONObject wind_object=response.getJSONObject("wind");
-                    String wind_speed=String.valueOf(wind_object.getDouble("speed"));
-                    String mtemp = String.valueOf(main_object.getDouble("temp"));
-                    String mhumi = String.valueOf(main_object.getDouble("humidity"));
-                    String mdes = object.getString("description");
-                    String mcity = response.getString("name");
-
-                    temp.setText(mtemp);
-                    city.setText(mcity);
-                    WeatherHangeul weatherHangeul = new WeatherHangeul(mdes);
-                    mdes=weatherHangeul.getWeather();
-                    weather.setText(mdes);
-                    humidity.setText(mhumi);
-                    wind.setText(wind_speed);
-
-                    Calendar calendar = Calendar.getInstance();
-                    SimpleDateFormat sdf=new SimpleDateFormat("EEEE-MM-DD");
-                    String formatted_date=sdf.format(calendar.getTime());
-
-                    date.setText(formatted_date);
-
-                    double temp_int = Double.parseDouble(mtemp);
-                    double centi = (temp_int-32)/1.8000;
-                    centi=Math.round(centi);
-                    int i=(int)centi;
-                    temp.setText(i+"°C");
-
-                }catch (JSONException e){
-                    e.printStackTrace();
-                }
-
-            }
-        }, new Response.ErrorListener(){
-
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-            }
-        });
-        RequestQueue queue= Volley.newRequestQueue(this);
-        queue.add(jor);
-    }
-
-    public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                                           int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == PERMISSIONS_ACCESS_FINE_LOCATION
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
@@ -265,6 +206,28 @@ public class MainActivity extends AppCompatActivity {
                     PERMISSIONS_ACCESS_COARSE_LOCATION);
         } else {
             isPermission = true;
+        }
+    }
+
+    public class MyAsyncTask extends AsyncTask<Integer, Integer, String> {
+
+        @Override
+        protected String doInBackground(Integer... integers) {
+
+            lat = gps.getLatitude();
+            lon = gps.getLongitude();
+            callPermission();  // 권한 요청을 해야 함
+            String url = "https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon +
+                    "&units=metric&appid=25101ddb40fe8f611b992f17f1d60b23";
+            Log.e("url=", url);
+            return url;
+        }
+
+        @Override
+        protected void onPostExecute(String url) {
+            super.onPostExecute(url);
+            fine_weather(url);
+            Log.e("onresume","의 마지막부분");
         }
     }
 }
