@@ -165,10 +165,7 @@ public class MainActivity extends AppCompatActivity {
                     date.setText(sdf);
 
                     double temp_int = Double.parseDouble(mtemp);
-                    double centi = (temp_int-32)/1.8000;
-                    centi=Math.round(centi);
-                    int i=(int)centi;
-                    temp.setText(i+"°C");
+                    temp.setText((int)temp_int+"°C");
 
                 }catch (JSONException e){
                     e.printStackTrace();
