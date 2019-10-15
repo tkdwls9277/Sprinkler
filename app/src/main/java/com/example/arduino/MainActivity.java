@@ -2,9 +2,6 @@ package com.example.arduino;
 
 import android.content.ContentValues;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,8 +9,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -40,12 +39,20 @@ public class MainActivity extends AppCompatActivity {
     private Button switchBtn; // 온오프 버튼 테스트용
 
     private Socket socket;
+    private boolean isConnected = false;
+    private String serverIP = "117.16.152.128";
+    private int serverPort = 8080;
+
+    private Thread receiverThread;
+    private BufferedReader bufferedReader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Initialize();
+
+        new Thread(new ConnectThread(serverIP, serverPort)).start();
     }
     public void Initialize()
     {
@@ -56,48 +63,8 @@ public class MainActivity extends AppCompatActivity {
         switchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Thread senderThread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            String serverIP = "117.16.152.128"; // 추후에 변경
-                            int serverPort = 8080; // 추후에 변경
-                            socket = new Socket(serverIP, serverPort);
-                        }
-                        catch (UnknownHostException e) {
-                            Log.e("SenderThread", e.getMessage());
-                        }
-                        catch (IOException e) {
-                            Log.e("SenderThread", e.getMessage());
-                        }
 
-                        if (socket != null){
-                            try {
-                                PrintWriter sendSignal = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8")), true);
-                                sendSignal.println("y"); // 이 괄호 안에 명령어 다시 정하자
-                                sendSignal.flush();
-                                // 소켓 닫는 코드도 이 부분 지나서 추가하자.
-
-                            }
-                            catch (IOException e) {
-                                Log.e("SenderThread", e.getMessage());
-                            }
-                        }
-                        else {
-                            Log.e("SenderThread", "Creating Socket is failed");
-                        }
-
-                        if (socket != null) {
-                            try {
-                                socket.close();
-                            }
-                            catch (IOException e) {
-                                Log.e("SenderThread", e.getMessage());
-                            }
-                        }
-                    }
-                });
-                senderThread.start();
+                new Thread(new SenderThread("y")).start();
                 switchBtn.setBackgroundResource(R.drawable.button_red);
             }
         });
@@ -107,6 +74,189 @@ public class MainActivity extends AppCompatActivity {
         mThis = this;
         mForeCast = new ForeCastManager(lon,lat,mThis);
         mForeCast.run();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        new Thread(new SenderThread("E")).start();
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        new Thread(new SenderThread("E")).start();
+
+    }
+
+    private class ConnectThread implements Runnable {
+
+        private String serverIP;
+        private int serverPort;
+
+        public ConnectThread(String ip, int port) {
+            serverIP = ip;
+            serverPort = port;
+        }
+
+        @Override
+        public void run() {
+            try {
+                socket = new Socket(serverIP, serverPort);
+            }
+            catch( UnknownHostException e )
+            {
+                Log.e("ConnectThread",  "can't find host");
+            }
+            catch( SocketTimeoutException e )
+            {
+                Log.e("ConnectThread", "ConnectThread: timeout");
+            }
+            catch (Exception e) {
+
+                Log.e("ConnectThread", e.getMessage());
+            }
+
+
+            if (socket != null) {
+                try {
+                    bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
+
+                    PrintWriter sendSignal = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8")), true);
+                    sendSignal.println("y");
+                    sendSignal.flush();
+
+                    isConnected = true;
+                }
+                catch (IOException e) {
+                    Log.e("ConnectThread", e.getMessage());
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isConnected) {
+                            /*
+                            connStatusView.setText("Connected to Server");
+                            ipNumberView.setText("IP Number : " + serverIP);
+                            portNumberView.setText("Port Number : " + serverPort);
+                            */
+
+                            receiverThread = new Thread(new ReceiverThread());
+                            receiverThread.start();
+                            Log.e("ConnectThread", "ReceiverThread start");
+                        }
+                    }
+                });
+
+            }
+            else {
+                Log.e("ConnectThread","Socket is null");
+
+                /*
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        connStatusView.setText("Socket is Null");
+                        ipNumberView.setText("F A I L E D");
+                        portNumberView.setText("F A I L E D");
+                    }
+                });
+                */
+            }
+
+        }
+    }
+
+    private class ReceiverThread implements Runnable {
+
+        @Override
+        public void run() {
+            try {
+                while (isConnected) {
+                    Log.e("ReceiverThread", "while");
+                    if (bufferedReader == null) {
+                        Log.e("ReceiverThread", "bufferedReader is null");
+                        break;
+                    }
+
+                    final String recvMessage = bufferedReader.readLine();
+                    // Log.e("ReceiverThread", recvMessage);
+                    if (recvMessage != null) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                // 모터가 가동중일 때와 아닐 때 구분해서
+                                // 버튼 색깔 지정
+
+                            }
+                        });
+                    }
+
+                }
+                /*
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    Log.e("ReceiverThread", e.getMessage());
+                }
+                */
+            }
+            catch (IOException e) {
+                Log.e("ReceiverThread", e.getMessage());
+            }
+
+
+            if (socket != null) {
+                try {
+                    socket.close();
+
+                    /*
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            connStatusView.setText("Socket is Null");
+                            ipNumberView.setText("F A I L E D");
+                            portNumberView.setText("F A I L E D");
+                        }
+                    });
+                    */
+                } catch (IOException e) {
+                    Log.e("ReceiverThread", e.getMessage());
+                }
+            }
+        }
+
+    }
+
+    private class SenderThread implements Runnable {
+
+        private String msg;
+
+        public SenderThread (String msg) {
+            this.msg = msg;
+        }
+        @Override
+        public void run() {
+            if (isConnected && socket != null){
+                try {
+                    PrintWriter sendSignal = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8")), true);
+                    sendSignal.println(msg);
+                    sendSignal.flush();
+
+                }
+                catch (IOException e) {
+                    Log.e("SenderThread", e.getMessage());
+                }
+            }
+            else {
+                Log.e("SenderThread", "wtf"); // 뒤로가기 버튼을 누르면 (종료코드) 여기로 온다 왜 그럴까
+            }
+
+            if (msg.equals("E")) isConnected = false; // 종료 코드
+        }
     }
 
     public void onClickView(View v) { // 레이아웃 전환 테스트용

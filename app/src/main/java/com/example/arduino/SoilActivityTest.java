@@ -228,7 +228,7 @@ public class SoilActivityTest extends AppCompatActivity {
                 Log.e("SenderThread", "wtf"); // 뒤로가기 버튼을 누르면 (종료코드) 여기로 온다 왜 그럴까
             }
 
-            if (msg == "E") isConnected = false; // 종료 코드
+            if (msg.equals("E")) isConnected = false; // 종료 코드
         }
     }
 }
