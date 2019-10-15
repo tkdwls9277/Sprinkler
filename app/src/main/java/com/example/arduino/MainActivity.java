@@ -1,6 +1,7 @@
 package com.example.arduino;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -44,6 +45,9 @@ public class MainActivity extends AppCompatActivity {
 
     TextView temp,city,date,weather,humidity,wind;
 
+    private TextView tvSolar; // 레이아웃 전환 테스트용
+    private TextView tvWater; // 레이아웃 전환 테스트용
+
     private Button switchBtn; // 온오프 버튼 테스트용
 
     private Socket socket;
@@ -52,17 +56,19 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        temp = (TextView)findViewById(R.id.temp);
-        city = (TextView)findViewById(R.id.city);
-        date = (TextView)findViewById(R.id.date);
-        weather = (TextView)findViewById(R.id.weather);
-        humidity = (TextView)findViewById(R.id.humidity);
-        wind=(TextView)findViewById(R.id.wind);
+        temp = (TextView) findViewById(R.id.temp);
+        city = (TextView) findViewById(R.id.city);
+        date = (TextView) findViewById(R.id.date);
+        weather = (TextView) findViewById(R.id.weather);
+        humidity = (TextView) findViewById(R.id.humidity);
+        wind = (TextView) findViewById(R.id.wind);
 
         gps = new GpsInfo(MainActivity.this);
-        MyAsyncTask myAsyncTask=new MyAsyncTask();
+        MyAsyncTask myAsyncTask = new MyAsyncTask();
         myAsyncTask.execute();
-
+        Initialize();
+    }
+    public void Initialize(){
         switchBtn = findViewById(R.id.switchBtn);
         switchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -113,6 +119,20 @@ public class MainActivity extends AppCompatActivity {
                 switchBtn.setBackgroundResource(R.drawable.button_red);
             }
         });
+    }
+    public void onClickView(View v) { // 레이아웃 전환 테스트용
+        switch (v.getId()) {
+            case R.id.textView1:{
+                Intent intent = new Intent(this, SoilActivityTest.class);
+                startActivity(intent);
+                break;
+            }
+            case R.id.textView2:{
+                Intent intent = new Intent(this, WaterActivityTest.class);
+                startActivity(intent);
+                break;
+            }
+        }
     }
 
 
