@@ -2,9 +2,8 @@ package com.example.arduino;
 
 import android.content.ContentValues;
 import android.content.Intent;
-import android.os.Message;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
@@ -16,7 +15,6 @@ public class MainActivity extends AppCompatActivity {
     public static final int THREAD_HANDLER_SUCCESS_INFO = 1;
     private TextView tv_WeatherInfo;
 
-    private ForeCastManager mForeCast;
     private String lon = "128.3910799"; // 좌표 설정
     private String lat = "36.1444292";  // 좌표 설정
     private MainActivity mThis;
@@ -40,8 +38,6 @@ public class MainActivity extends AppCompatActivity {
         tv_WeatherInfo = findViewById(R.id.tv_WeatherInfo);
         mWeatherInfomation = new ArrayList<>();
         mThis = this;
-        mForeCast = new ForeCastManager(lon,lat,mThis);
-        mForeCast.run();
     }
 
     public void onClickView(View v) { // 레이아웃 전환 테스트용
@@ -119,28 +115,5 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch(msg.what){
-                case THREAD_HANDLER_SUCCESS_INFO :
-                    mForeCast.getmWeather();
-                    mWeatherData = mForeCast.getmWeather();
-                    if(mWeatherData.size() ==0)
-                        tv_WeatherInfo.setText("데이터가 없습니다");
-
-                    DataToInformation(); // 자료 클래스로 저장,
-
-                    String data = "";
-                    data = PrintValue();
-                    DataChangedToHangeul();
-                    data = data + PrintValue();
-
-                    tv_WeatherInfo.setText(data);
-                    break;
-                default:
-                    break;
-            }
-        }
     };
 }
