@@ -30,7 +30,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -132,7 +132,6 @@ public class MainActivity extends AppCompatActivity {
                     String mdes = object.getString("description");
                     String mcity = response.getString("name");
 
-                    temp.setText(mtemp);
                     city.setText(mcity);
                     WeatherHangeul weatherHangeul = new WeatherHangeul(mdes);
                     mdes=weatherHangeul.getWeather();
@@ -140,11 +139,10 @@ public class MainActivity extends AppCompatActivity {
                     humidity.setText(mhumi);
                     wind.setText(wind_speed);
 
-                    Calendar calendar = Calendar.getInstance();
-                    SimpleDateFormat sdf = new SimpleDateFormat("EEEE-MM-DD");
-                    String formatted_date=sdf.format(calendar.getTime());
-
-                    date.setText(formatted_date);
+                    SimpleDateFormat form=new SimpleDateFormat("yyyy년 MM월 dd일");
+                    Date day0date=new Date();
+                    String sdf=form.format(day0date);
+                    date.setText(sdf);
 
                     double temp_int = Double.parseDouble(mtemp);
                     double centi = (temp_int-32)/1.8000;

@@ -22,6 +22,7 @@ import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 public class Weather5days extends AppCompatActivity {
 
@@ -33,7 +34,11 @@ public class Weather5days extends AppCompatActivity {
     private boolean isAccessCoarseLocation = false;
     private boolean isPermission = false;
 
-    TextView todaytxt,tomorrowtxt,tomorrow2txt;
+    TextView city, wind;
+    TextView day0datetxt,day1datetxt,day2datetxt,day3datetxt;
+    TextView day0weathertxt,day1weathertxt,day2weathertxt,day3weathertxt;
+    TextView day0temptxt,day1temptxt,day2temptxt,day3temptxt;
+    TextView day0humitxt,day1humitxt,day2humitxt,day3humitxt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,12 +49,28 @@ public class Weather5days extends AppCompatActivity {
         Weather5days.MyAsyncTask myAsyncTask=new Weather5days.MyAsyncTask();
         myAsyncTask.execute();
 
-        todaytxt = (TextView)findViewById(R.id.Txt1);
-        tomorrowtxt= (TextView)findViewById(R.id.Txt2);
-        tomorrow2txt = (TextView)findViewById(R.id.Txt3);
+        city=(TextView)findViewById(R.id.city);
+        wind=(TextView)findViewById(R.id.day0wind);
+        day0datetxt = (TextView)findViewById(R.id.day0date);
+        day1datetxt = (TextView)findViewById(R.id.day1date);
+        day2datetxt= (TextView)findViewById(R.id.day2date);
+        day3datetxt = (TextView)findViewById(R.id.day3date);
+
+        day0weathertxt = (TextView)findViewById(R.id.day0weather);
+        day1weathertxt = (TextView)findViewById(R.id.day1weather);
+        day2weathertxt = (TextView)findViewById(R.id.day2weather);
+        day3weathertxt = (TextView)findViewById(R.id.day3weather);
+
+        day0temptxt = (TextView)findViewById(R.id.day0temp);
+        day1temptxt = (TextView)findViewById(R.id.day1temp);
+        day2temptxt = (TextView)findViewById(R.id.day2temp);
+        day3temptxt = (TextView)findViewById(R.id.day3temp);
+
+        day0humitxt = (TextView)findViewById(R.id.day0humi);
+        day1humitxt = (TextView)findViewById(R.id.day1humi);
+        day2humitxt = (TextView)findViewById(R.id.day2humi);
+        day3humitxt = (TextView)findViewById(R.id.day3humi);
     }
-
-
 
     private void fine_weather(String url) {
         JsonObjectRequest jor = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -57,41 +78,71 @@ public class Weather5days extends AppCompatActivity {
             public void onResponse(JSONObject response) {
                 try{
                     JSONArray lists=response.getJSONArray("list");
-                    JSONObject today=lists.getJSONObject(0);
-                    JSONObject tomorrow=lists.getJSONObject(8);
-                    JSONObject tomorrow2=lists.getJSONObject(16);
+                    JSONObject day0=lists.getJSONObject(0);
+                    JSONObject day1=lists.getJSONObject(8);
+                    JSONObject day2=lists.getJSONObject(16);
+                    JSONObject day3=lists.getJSONObject(24);
+                    JSONObject day4=lists.getJSONObject(32);
+                    //도시이름 파싱
+                    JSONObject getcity=response.getJSONObject("city");
+                    String cityname=getcity.getString("name");
+                    city.setText(cityname);
 
-                    String todayweather=today.getJSONArray("weather").getJSONObject(0).getString("description");
-                    String tomorrowweather=tomorrow.getJSONArray("weather").getJSONObject(0).getString("description");
-                    String tomorrow2weather=tomorrow2.getJSONArray("weather").getJSONObject(0).getString("description");
+                    //바람세기 파싱
+                    Double windtxt=day0.getJSONObject("wind").getDouble("speed");
+                    wind.setText(String.valueOf(windtxt));
 
-                    todaytxt.setText(new WeatherHangeul(todayweather).getWeather());
-                    tomorrowtxt.setText(new WeatherHangeul(tomorrowweather).getWeather());
-                    tomorrow2txt.setText(new WeatherHangeul(tomorrow2weather).getWeather());
+                    //날씨 영문
+                    String day0weather=day0.getJSONArray("weather").getJSONObject(0).getString("description");
+                    String day1weather=day1.getJSONArray("weather").getJSONObject(0).getString("description");
+                    String day2weather=day2.getJSONArray("weather").getJSONObject(0).getString("description");
+                    String day3weather=day3.getJSONArray("weather").getJSONObject(0).getString("description");
+                    String day4weather=day4.getJSONArray("weather").getJSONObject(0).getString("description");
 
-                    JSONArray array = response.getJSONArray("weather");
+                    //날씨 한글화
+                    day0weathertxt.setText(new WeatherHangeul(day0weather).getWeather());
+                    day1weathertxt.setText(new WeatherHangeul(day1weather).getWeather());
+                    day2weathertxt.setText(new WeatherHangeul(day2weather).getWeather());
+                    day3weathertxt.setText(new WeatherHangeul(day3weather).getWeather());
 
-                    JSONObject main_object=response.getJSONObject("main");
-                    JSONObject object=array.getJSONObject(0);
+                    //온도
+                    JSONObject day0main=day0.getJSONObject("main");
+                    Double day0temp=day0main.getDouble("temp");
+                    day0temptxt.setText(((int)(day0temp-273.15))+"°C");
+                    day0humitxt.setText(String.valueOf(day0main.getInt("humidity")));
+                    JSONObject day1main=day1.getJSONObject("main");
+                    Double day1temp=day1main.getDouble("temp");
+                    day1temptxt.setText(((int)(day1temp-273.15))+"°C");
+                    day1humitxt.setText(String.valueOf(day1main.getInt("humidity")));
+                    JSONObject day2main=day2.getJSONObject("main");
+                    Double day2temp=day2main.getDouble("temp");
+                    day2temptxt.setText(((int)(day2temp-273.15))+"°C");
+                    day2humitxt.setText(String.valueOf(day2main.getInt("humidity")));
+                    JSONObject day3main=day3.getJSONObject("main");
+                    Double day3temp=day3main.getDouble("temp");
+                    day3temptxt.setText(((int)(day3temp-273.15))+"°C");
+                    day3humitxt.setText(String.valueOf(day3main.getInt("humidity")));
 
-                    JSONObject wind_object=response.getJSONObject("wind");
-                    String wind_speed=String.valueOf(wind_object.getDouble("speed"));
-                    String mtemp = String.valueOf(main_object.getDouble("temp"));
-                    String mhumi = String.valueOf(main_object.getDouble("humidity"));
-                    String mdes = object.getString("description");
-                    String mcity = response.getString("name");
 
-                    /*temp.setText(mtemp);
-                    city.setText(mcity);
-                    WeatherHangeul weatherHangeul = new WeatherHangeul(mdes);
-                    mdes=weatherHangeul.getWeather();
-                    weather.setText(mdes);
-                    humidity.setText(mhumi);
-                    wind.setText(wind_speed);*/
+                    //달력에서 날짜 파싱
+                    Calendar mcalendar = Calendar.getInstance();
+                    Date day0date=mcalendar.getTime();
+                    String sdf0=new SimpleDateFormat("yyyy년 MM월 dd일").format(day0date);
+                    day0datetxt.setText(sdf0);
+                    mcalendar.add(Calendar.DAY_OF_WEEK,1);
+                    Date day1date=mcalendar.getTime();
+                    String sdf1=new SimpleDateFormat("MM월 dd일").format(day1date);
+                    day1datetxt.setText(sdf1);
+                    mcalendar.add(Calendar.DAY_OF_WEEK,1);
+                    Date day2date=mcalendar.getTime();
+                    String sdf2=new SimpleDateFormat("MM월 dd일").format(day2date);
+                    day2datetxt.setText(sdf2);
+                    mcalendar.add(Calendar.DAY_OF_WEEK,1);
+                    Date day3date=mcalendar.getTime();
+                    String sdf3=new SimpleDateFormat("MM월 dd일").format(day3date);
+                    day3datetxt.setText(sdf3);
 
-                    Calendar calendar = Calendar.getInstance();
-                    SimpleDateFormat sdf=new SimpleDateFormat("EEEE-MM-DD");
-                    String formatted_date=sdf.format(calendar.getTime());
+
 
                     /*date.setText(formatted_date);
 
@@ -172,7 +223,7 @@ public class Weather5days extends AppCompatActivity {
                     "lat=" + lat +
                     "&lon="+ lon +
                     "&appid=25101ddb40fe8f611b992f17f1d60b23" +
-                    "&cnt=" + 18;
+                    "&cnt=" + 33;
             Log.e("url=",url);
             return url;
         }
