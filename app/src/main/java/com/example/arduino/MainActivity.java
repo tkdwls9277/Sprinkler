@@ -10,7 +10,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvSolar; // 레이아웃 전환 테스트용
     private TextView tvWater; // 레이아웃 전환 테스트용
 
-    private Button switchBtn; // 온오프 버튼 테스트용
+    private ImageButton switchBtn; // 온오프 버튼 테스트용
 
     private Socket socket;
 
@@ -151,15 +151,17 @@ public class MainActivity extends AppCompatActivity {
                     String mhumi = String.valueOf(main_object.getDouble("humidity"));
                     String mdes = object.getString("description");
                     String mcity = response.getString("name");
+                    String iconimage=object.getString("icon");
+                    String iconurl="http://openweathermap.org/img/w/" + iconimage + ".png";
 
                     city.setText(mcity);
                     WeatherHangeul weatherHangeul = new WeatherHangeul(mdes);
                     mdes=weatherHangeul.getWeather();
                     weather.setText(mdes);
-                    humidity.setText(mhumi);
-                    wind.setText(wind_speed);
+                    humidity.setText(mhumi+"%");
+                    wind.setText(wind_speed+"m/s");
 
-                    SimpleDateFormat form=new SimpleDateFormat("yyyy년 MM월 dd일");
+                    SimpleDateFormat form=new SimpleDateFormat("yyyy년 MM월 dd일 HH시");
                     Date day0date=new Date();
                     String sdf=form.format(day0date);
                     date.setText(sdf);
