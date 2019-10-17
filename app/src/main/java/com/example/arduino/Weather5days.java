@@ -117,6 +117,7 @@ public class Weather5days extends AppCompatActivity {
                     String iconurl="http://openweathermap.org/img/w/" + icontxt + ".png";
                     Picasso.get().load(iconurl).into(icon);
 
+
                     //날씨 한글화
                     day0weathertxt.setText(new WeatherHangeul(day0weather).getWeather());
                     day1weathertxt.setText(new WeatherHangeul(day1weather).getWeather());
