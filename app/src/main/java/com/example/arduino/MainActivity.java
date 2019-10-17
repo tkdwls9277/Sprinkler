@@ -3,6 +3,7 @@ package com.example.arduino;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -10,7 +11,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -32,6 +33,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -43,12 +45,12 @@ public class MainActivity extends AppCompatActivity {
     private boolean isAccessCoarseLocation = false;
     private boolean isPermission = false;
 
-    TextView temp,city,date,weather,humidity,wind;
+    TextView temp,city,date,weather,humidity,wind,sunset,sunrise;
 
     private TextView tvSolar; // 레이아웃 전환 테스트용
     private TextView tvWater; // 레이아웃 전환 테스트용
 
-    private Button switchBtn; // 온오프 버튼 테스트용
+    private ImageButton switchBtn; // 온오프 버튼 테스트용
 
     private Socket socket;
 
@@ -62,6 +64,8 @@ public class MainActivity extends AppCompatActivity {
         weather = (TextView) findViewById(R.id.weather);
         humidity = (TextView) findViewById(R.id.humidity);
         wind = (TextView) findViewById(R.id.wind);
+        sunrise=(TextView)findViewById(R.id.sunrise);
+        sunset=(TextView)findViewById(R.id.sunset);
 
         gps = new GpsInfo(MainActivity.this);
         MyAsyncTask myAsyncTask = new MyAsyncTask();
@@ -116,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
                 });
                 senderThread.start();
                 switchBtn.setBackgroundColor(Color.RED);
-                switchBtn.setBackgroundResource(R.drawable.button_red);
+                switchBtn.setBackgroundResource(R.drawable.rb);
             }
         });
     }
@@ -152,22 +156,31 @@ public class MainActivity extends AppCompatActivity {
                     String mdes = object.getString("description");
                     String mcity = response.getString("name");
 
+                    String iconimage=object.getString("icon");
+                    String iconurl="http://openweathermap.org/img/w/" + iconimage + ".png";
+                    Bitmap bitmap=null;
+
+
                     city.setText(mcity);
                     WeatherHangeul weatherHangeul = new WeatherHangeul(mdes);
                     mdes=weatherHangeul.getWeather();
                     weather.setText(mdes);
-                    humidity.setText(mhumi);
-                    wind.setText(wind_speed);
+                    humidity.setText(mhumi+"%");
+                    wind.setText(wind_speed+"m/s");
 
-                    SimpleDateFormat form=new SimpleDateFormat("yyyy년 MM월 dd일");
+                    JSONObject sys=response.getJSONObject("sys");
+                    Long sunr =sys.getLong("sunrise");
+                    Long suns =sys.getLong("sunset");
+                    sunrise.setText(new SimpleDateFormat("hh:mm a", Locale.ENGLISH).format(new Date(sunr*1000)));
+                    sunset.setText(new SimpleDateFormat("hh:mm a", Locale.ENGLISH).format(new Date(suns*1000)));
+
+                    SimpleDateFormat form=new SimpleDateFormat("yyyy년 MM월 dd일 HH시");
                     Date day0date=new Date();
                     String sdf=form.format(day0date);
                     date.setText(sdf);
 
                     double temp_int = Double.parseDouble(mtemp);
-                    double centi = (temp_int-32)/1.8000;
-                    centi=Math.round(centi);
-                    int i=(int)centi;
+                    int i=(int)temp_int;
                     temp.setText(i+"°C");
 
                 }catch (JSONException e){
