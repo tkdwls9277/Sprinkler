@@ -1,49 +1,38 @@
 package com.example.arduino;
 
-import android.Manifest;
+import android.content.ContentValues;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.os.AsyncTask;
-import android.os.Build;
-import android.os.Bundle;
+import android.graphics.drawable.Drawable;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
 
 public class MainActivity extends AppCompatActivity {
+    public static final int THREAD_HANDLER_SUCCESS_INFO = 1;
+    private TextView tv_WeatherInfo;
 
-    double lat, lon;//위도 경도 값
-    private GpsInfo gps;
-    private final int PERMISSIONS_ACCESS_FINE_LOCATION = 1000;
-    private final int PERMISSIONS_ACCESS_COARSE_LOCATION = 1001;
-    private boolean isAccessFineLocation = false;
-    private boolean isAccessCoarseLocation = false;
-    private boolean isPermission = false;
-
-    TextView temp,city,date,weather,humidity,wind;
+    private ForeCastManager mForeCast;
+    private String lon = "128.3910799"; // 좌표 설정
+    private String lat = "36.1444292";  // 좌표 설정
+    private MainActivity mThis;
+    private ArrayList<ContentValues> mWeatherData;
+    private ArrayList<WeatherInfo> mWeatherInfomation;
 
     private TextView tvSolar; // 레이아웃 전환 테스트용
     private TextView tvWater; // 레이아웃 전환 테스트용
@@ -56,19 +45,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        temp = (TextView) findViewById(R.id.temp);
-        city = (TextView) findViewById(R.id.city);
-        date = (TextView) findViewById(R.id.date);
-        weather = (TextView) findViewById(R.id.weather);
-        humidity = (TextView) findViewById(R.id.humidity);
-        wind = (TextView) findViewById(R.id.wind);
-
-        gps = new GpsInfo(MainActivity.this);
-        MyAsyncTask myAsyncTask = new MyAsyncTask();
-        myAsyncTask.execute();
         Initialize();
     }
-    public void Initialize(){
+    public void Initialize()
+    {
+        tvSolar = findViewById(R.id.textView1);
+        tvSolar = findViewById(R.id.textView2);
+
         switchBtn = findViewById(R.id.switchBtn);
         switchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         try {
-                            String serverIP = "192.168.43.28"; // 추후에 변경
+                            String serverIP = "117.16.152.128"; // 추후에 변경
                             int serverPort = 8080; // 추후에 변경
                             socket = new Socket(serverIP, serverPort);
                         }
@@ -115,11 +98,17 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
                 senderThread.start();
-                switchBtn.setBackgroundColor(Color.RED);
                 switchBtn.setBackgroundResource(R.drawable.button_red);
             }
         });
+
+        tv_WeatherInfo = findViewById(R.id.tv_WeatherInfo);
+        mWeatherInfomation = new ArrayList<>();
+        mThis = this;
+        mForeCast = new ForeCastManager(lon,lat,mThis);
+        mForeCast.run();
     }
+
     public void onClickView(View v) { // 레이아웃 전환 테스트용
         switch (v.getId()) {
             case R.id.textView1:{
@@ -135,114 +124,92 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public String PrintValue()
+    {
+        String mData = "";
+        for(int i = 0; i < mWeatherInfomation.size(); i ++)
+        {
+            mData = mData + mWeatherInfomation.get(i).getWeather_Day() + "\r\n"
+                    +  mWeatherInfomation.get(i).getWeather_Name() + "\r\n"
+                    +  mWeatherInfomation.get(i).getClouds_Sort()
+                    +  " /Cloud amount: " + mWeatherInfomation.get(i).getClouds_Value()
+                    +  mWeatherInfomation.get(i).getClouds_Per() +"\r\n"
+                    +  mWeatherInfomation.get(i).getWind_Name()
+                    +  " /WindSpeed: " + mWeatherInfomation.get(i).getWind_Speed() + " mps" + "\r\n"
+                    +  "Max: " + mWeatherInfomation.get(i).getTemp_Max() + "℃"
+                    +  " /Min: " + mWeatherInfomation.get(i).getTemp_Min() + "℃" +"\r\n"
+                    +  "Humidity: " + mWeatherInfomation.get(i).getHumidity() + "%";
 
-    private void fine_weather(String url) {
-        JsonObjectRequest jor = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                try{
-                    Log.e("대충","try");
-                    JSONObject main_object=response.getJSONObject("main");
-                    JSONArray array = response.getJSONArray("weather");
-                    JSONObject object=array.getJSONObject(0);
-                    JSONObject wind_object=response.getJSONObject("wind");
-                    String wind_speed=String.valueOf(wind_object.getDouble("speed"));
-                    String mtemp = String.valueOf(main_object.getDouble("temp"));
-                    String mhumi = String.valueOf(main_object.getDouble("humidity"));
-                    String mdes = object.getString("description");
-                    String mcity = response.getString("name");
-
-                    city.setText(mcity);
-                    WeatherHangeul weatherHangeul = new WeatherHangeul(mdes);
-                    mdes=weatherHangeul.getWeather();
-                    weather.setText(mdes);
-                    humidity.setText(mhumi);
-                    wind.setText(wind_speed);
-
-                    SimpleDateFormat form=new SimpleDateFormat("yyyy년 MM월 dd일");
-                    Date day0date=new Date();
-                    String sdf=form.format(day0date);
-                    date.setText(sdf);
-
-                    double temp_int = Double.parseDouble(mtemp);
-                    temp.setText((int)temp_int+"°C");
-
-                }catch (JSONException e){
-                    e.printStackTrace();
-                }
-
-            }
-        }, new Response.ErrorListener(){
-
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("onError","Response");
-            }
-        });
-        Log.e("queue","add");
-        RequestQueue queue= Volley.newRequestQueue(this);
-        queue.add(jor);
+            mData = mData + "\r\n" + "----------------------------------------------" + "\r\n";
+        }
+        return mData;
     }
 
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (requestCode == PERMISSIONS_ACCESS_FINE_LOCATION
-                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-            isAccessFineLocation = true;
-
-        } else if (requestCode == PERMISSIONS_ACCESS_COARSE_LOCATION
-                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-            isAccessCoarseLocation = true;
-        }
-
-        if (isAccessFineLocation && isAccessCoarseLocation) {
-            isPermission = true;
+    public void DataChangedToHangeul()
+    {
+        for(int i = 0 ; i <mWeatherInfomation.size(); i ++)
+        {
+            WeatherToHangeul mHangeul = new WeatherToHangeul(mWeatherInfomation.get(i));
+            mWeatherInfomation.set(i,mHangeul.getHangeulWeather());
         }
     }
 
-    // 전화번호 권한 요청
-    private void callPermission() {
-        // Check the SDK version and whether the permission is already granted or not.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-                && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
 
-            requestPermissions(
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    PERMISSIONS_ACCESS_FINE_LOCATION);
+    public void DataToInformation()
+    {
+        for(int i = 0; i < mWeatherData.size(); i++)
+        {
+            mWeatherInfomation.add(new WeatherInfo(
+                    String.valueOf(mWeatherData.get(i).get("weather_Name")),  String.valueOf(mWeatherData.get(i).get("weather_Number")), String.valueOf(mWeatherData.get(i).get("weather_Much")),
+                    String.valueOf(mWeatherData.get(i).get("weather_Type")),  String.valueOf(mWeatherData.get(i).get("wind_Direction")),  String.valueOf(mWeatherData.get(i).get("wind_SortNumber")),
+                    String.valueOf(mWeatherData.get(i).get("wind_SortCode")),  String.valueOf(mWeatherData.get(i).get("wind_Speed")),  String.valueOf(mWeatherData.get(i).get("wind_Name")),
+                    String.valueOf(mWeatherData.get(i).get("temp_Min")),  String.valueOf(mWeatherData.get(i).get("temp_Max")),  String.valueOf(mWeatherData.get(i).get("humidity")),
+                    String.valueOf(mWeatherData.get(i).get("Clouds_Value")),  String.valueOf(mWeatherData.get(i).get("Clouds_Sort")), String.valueOf(mWeatherData.get(i).get("Clouds_Per")),String.valueOf(mWeatherData.get(i).get("day"))
+            ));
 
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-                && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            requestPermissions(
-                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                    PERMISSIONS_ACCESS_COARSE_LOCATION);
-        } else {
-            isPermission = true;
         }
+
     }
-
-    public class MyAsyncTask extends AsyncTask<Integer, Integer, String> {
-
+    public Handler handler = new Handler(){
         @Override
-        protected String doInBackground(Integer... integers) {
+        public void publish(LogRecord record) {
 
-            lat = gps.getLatitude();
-            lon = gps.getLongitude();
-            callPermission();  // 권한 요청을 해야 함
-            String url = "https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon +
-                    "&units=metric&appid=25101ddb40fe8f611b992f17f1d60b23";
-            Log.e("url=", url);
-            return url;
         }
 
         @Override
-        protected void onPostExecute(String url) {
-            super.onPostExecute(url);
-            fine_weather(url);
-            Log.e("onresume","의 마지막부분");
+        public void flush() {
+
         }
-    }
+
+        @Override
+        public void close() throws SecurityException {
+
+        }
+
+        /*
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch(msg.what){
+                case THREAD_HANDLER_SUCCESS_INFO :
+                    mForeCast.getmWeather();
+                    mWeatherData = mForeCast.getmWeather();
+                    if(mWeatherData.size() ==0)
+                        tv_WeatherInfo.setText("데이터가 없습니다");
+
+                    DataToInformation(); // 자료 클래스로 저장,
+
+                    String data = "";
+                    data = PrintValue();
+                    DataChangedToHangeul();
+                    data = data + PrintValue();
+
+                    tv_WeatherInfo.setText(data);
+                    break;
+                default:
+                    break;
+            }
+        }
+        */
+    };
 }
