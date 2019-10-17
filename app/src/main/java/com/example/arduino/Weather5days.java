@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -15,6 +16,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,6 +37,7 @@ public class Weather5days extends AppCompatActivity {
     private boolean isAccessCoarseLocation = false;
     private boolean isPermission = false;
 
+    ImageView icon;
     TextView city, wind,sunrise,sunset;
     TextView day0datetxt,day1datetxt,day2datetxt,day3datetxt;
     TextView day0weathertxt,day1weathertxt,day2weathertxt,day3weathertxt;
@@ -54,6 +57,7 @@ public class Weather5days extends AppCompatActivity {
         wind=(TextView)findViewById(R.id.day0wind);
         sunrise=(TextView)findViewById(R.id.day0sunrise);
         sunset=(TextView)findViewById(R.id.day0sunset);
+        icon=(ImageView)findViewById(R.id.icon);
 
         day0datetxt = (TextView)findViewById(R.id.day0date);
         day1datetxt = (TextView)findViewById(R.id.day1date);
@@ -100,7 +104,7 @@ public class Weather5days extends AppCompatActivity {
 
                     //바람세기 파싱
                     Double windtxt=day0.getJSONObject("wind").getDouble("speed");
-                    wind.setText(String.valueOf(windtxt));
+                    wind.setText(windtxt+"m/s");
 
                     //날씨 영문
                     String day0weather=day0.getJSONArray("weather").getJSONObject(0).getString("description");
@@ -108,6 +112,10 @@ public class Weather5days extends AppCompatActivity {
                     String day2weather=day2.getJSONArray("weather").getJSONObject(0).getString("description");
                     String day3weather=day3.getJSONArray("weather").getJSONObject(0).getString("description");
                     String day4weather=day4.getJSONArray("weather").getJSONObject(0).getString("description");
+
+                    String icontxt=day0.getJSONArray("weather").getJSONObject(0).getString("icon");
+                    String iconurl="http://openweathermap.org/img/w/" + icontxt + ".png";
+                    Picasso.get().load(iconurl).into(icon);
 
                     //날씨 한글화
                     day0weathertxt.setText(new WeatherHangeul(day0weather).getWeather());
@@ -119,19 +127,19 @@ public class Weather5days extends AppCompatActivity {
                     JSONObject day0main=day0.getJSONObject("main");
                     Double day0temp=day0main.getDouble("temp");
                     day0temptxt.setText(((int)(day0temp-273.15))+"°C");
-                    day0humitxt.setText(String.valueOf(day0main.getInt("humidity")));
+                    day0humitxt.setText(day0main.getInt("humidity")+"%");
                     JSONObject day1main=day1.getJSONObject("main");
                     Double day1temp=day1main.getDouble("temp");
                     day1temptxt.setText(((int)(day1temp-273.15))+"°C");
-                    day1humitxt.setText(String.valueOf(day1main.getInt("humidity")));
+                    day1humitxt.setText(day1main.getInt("humidity")+"%");
                     JSONObject day2main=day2.getJSONObject("main");
                     Double day2temp=day2main.getDouble("temp");
                     day2temptxt.setText(((int)(day2temp-273.15))+"°C");
-                    day2humitxt.setText(String.valueOf(day2main.getInt("humidity")));
+                    day2humitxt.setText(day2main.getInt("humidity")+"%");
                     JSONObject day3main=day3.getJSONObject("main");
                     Double day3temp=day3main.getDouble("temp");
                     day3temptxt.setText(((int)(day3temp-273.15))+"°C");
-                    day3humitxt.setText(String.valueOf(day3main.getInt("humidity")));
+                    day3humitxt.setText(day3main.getInt("humidity")+"%");
 
 
                     //달력에서 날짜 파싱

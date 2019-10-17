@@ -1,6 +1,7 @@
 package com.example.arduino;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -22,6 +23,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -155,6 +157,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void fine_weather(String url) {
         JsonObjectRequest jor = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+
+            private Context onResponse;
+
             @Override
             public void onResponse(JSONObject response) {
                 try{
@@ -172,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
                     String iconimage=object.getString("icon");
                     String iconurl="http://openweathermap.org/img/w/" + iconimage + ".png";
                     Log.e("iconurl",iconurl);
-
+                    Picasso.get().load(iconurl).into(icon);
 
                     city.setText(mcity);
                     WeatherHangeul weatherHangeul = new WeatherHangeul(mdes);
@@ -271,6 +276,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(String url) {
             super.onPostExecute(url);
             fine_weather(url);
+
             Log.e("onresume","의 마지막부분");
         }
     }
