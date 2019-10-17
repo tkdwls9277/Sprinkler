@@ -23,6 +23,7 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 public class Weather5days extends AppCompatActivity {
 
@@ -34,7 +35,7 @@ public class Weather5days extends AppCompatActivity {
     private boolean isAccessCoarseLocation = false;
     private boolean isPermission = false;
 
-    TextView city, wind;
+    TextView city, wind,sunrise,sunset;
     TextView day0datetxt,day1datetxt,day2datetxt,day3datetxt;
     TextView day0weathertxt,day1weathertxt,day2weathertxt,day3weathertxt;
     TextView day0temptxt,day1temptxt,day2temptxt,day3temptxt;
@@ -51,6 +52,9 @@ public class Weather5days extends AppCompatActivity {
 
         city=(TextView)findViewById(R.id.city);
         wind=(TextView)findViewById(R.id.day0wind);
+        sunrise=(TextView)findViewById(R.id.day0sunrise);
+        sunset=(TextView)findViewById(R.id.day0sunset);
+
         day0datetxt = (TextView)findViewById(R.id.day0date);
         day1datetxt = (TextView)findViewById(R.id.day1date);
         day2datetxt= (TextView)findViewById(R.id.day2date);
@@ -83,10 +87,16 @@ public class Weather5days extends AppCompatActivity {
                     JSONObject day2=lists.getJSONObject(16);
                     JSONObject day3=lists.getJSONObject(24);
                     JSONObject day4=lists.getJSONObject(32);
+
                     //도시이름 파싱
                     JSONObject getcity=response.getJSONObject("city");
                     String cityname=getcity.getString("name");
                     city.setText(cityname);
+
+                    Long sunr =getcity.getLong("sunrise");
+                    Long suns =getcity.getLong("sunset");
+                    sunrise.setText(new SimpleDateFormat("hh:mm a", Locale.ENGLISH).format(new Date(sunr*1000)));
+                    sunset.setText(new SimpleDateFormat("hh:mm a", Locale.ENGLISH).format(new Date(suns*1000)));
 
                     //바람세기 파싱
                     Double windtxt=day0.getJSONObject("wind").getDouble("speed");
@@ -127,7 +137,7 @@ public class Weather5days extends AppCompatActivity {
                     //달력에서 날짜 파싱
                     Calendar mcalendar = Calendar.getInstance();
                     Date day0date=mcalendar.getTime();
-                    String sdf0=new SimpleDateFormat("yyyy년 MM월 dd일").format(day0date);
+                    String sdf0=new SimpleDateFormat("yyyy년 MM월 dd일 HH시").format(day0date);
                     day0datetxt.setText(sdf0);
                     mcalendar.add(Calendar.DAY_OF_WEEK,1);
                     Date day1date=mcalendar.getTime();
@@ -141,16 +151,6 @@ public class Weather5days extends AppCompatActivity {
                     Date day3date=mcalendar.getTime();
                     String sdf3=new SimpleDateFormat("MM월 dd일").format(day3date);
                     day3datetxt.setText(sdf3);
-
-
-
-                    /*date.setText(formatted_date);
-
-                    double temp_int = Double.parseDouble(mtemp);
-                    double centi = (temp_int-32)/1.8000;
-                    centi=Math.round(centi);
-                    int i=(int)centi;
-                    temp.setText(i+"°C");*/
 
                 }catch (JSONException e){
                     e.printStackTrace();

@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -12,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -27,9 +29,13 @@ import org.json.JSONObject;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
 import java.net.Socket;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -46,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean isPermission = false;
 
     TextView temp,city,date,weather,humidity,wind,sunset,sunrise;
+    ImageView icon;
 
     private TextView tvSolar; // 레이아웃 전환 테스트용
     private TextView tvWater; // 레이아웃 전환 테스트용
@@ -66,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
         wind = (TextView) findViewById(R.id.wind);
         sunrise=(TextView)findViewById(R.id.sunrise);
         sunset=(TextView)findViewById(R.id.sunset);
+        icon=(ImageView)findViewById(R.id.icon);
 
         gps = new GpsInfo(MainActivity.this);
         MyAsyncTask myAsyncTask = new MyAsyncTask();
@@ -136,6 +144,11 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
                 break;
             }
+            case R.id.tv_WeatherInfo:{
+                Intent intent = new Intent(this, Weather5days.class);
+                startActivity(intent);
+                break;
+            }
         }
     }
 
@@ -158,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
 
                     String iconimage=object.getString("icon");
                     String iconurl="http://openweathermap.org/img/w/" + iconimage + ".png";
-                    Bitmap bitmap=null;
+                    Log.e("iconurl",iconurl);
 
 
                     city.setText(mcity);
