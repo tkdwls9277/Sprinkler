@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                new Thread(new SenderThread("y")).start();
+                new Thread(new SenderThread("m")).start();
                 switchBtn.setBackgroundResource(R.drawable.button_red);
             }
         });
@@ -223,10 +223,10 @@ public class MainActivity extends AppCompatActivity {
 
                                 }
                                 int waterTankValue = Integer.parseInt(parsing[1]);
-                                if (waterTankValue < 300) waterTank.setImageDrawable(R.drawable.watertank_quater1);
-                                else if (waterTankValue >= 300 && waterTankValue < 550) waterTank.setImageDrawable(R.drawable.watertank_quater2);
-                                else if (waterTankValue >= 550 && waterTankValue < 750) waterTank.setImageDrawable(R.drawable.watertank_quater2);
-                                else waterTank.setImageDrawable(R.drawable.watertank_full);
+                                if (waterTankValue < 300) waterTank.setImageResource(R.drawable.watertank_quater1);
+                                else if (waterTankValue >= 300 && waterTankValue < 550) waterTank.setImageResource(R.drawable.watertank_quater2);
+                                else if (waterTankValue >= 550 && waterTankValue < 750) waterTank.setImageResource(R.drawable.watertank_quater2);
+                                else waterTank.setImageResource(R.drawable.watertank_full);
 
                             }
                         });
