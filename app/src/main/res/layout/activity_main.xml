@@ -14,20 +14,6 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:text="Sprinkler Solar Cell"
-                android:textSize="20dp" />
-        </LinearLayout>
-
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
@@ -46,7 +32,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:hint="도시"
+                android:text="도시"
                 android:textSize="30dp" />//도시
 
             <TextView
@@ -54,10 +40,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:hint="날짜"
+                android:text="날짜"
                 android:textSize="20dp" />//날짜
 
             <LinearLayout
+                android:id="@+id/Linear"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="20dp"
@@ -90,7 +77,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="10dp"
-                                android:hint="날씨" />
+                                android:text="날씨" />
                         </LinearLayout>
 
                         <LinearLayout
@@ -143,7 +130,8 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="10dp"
-                                android:hint="온도" />
+                                android:text="온도"
+                                android:textSize="25dp" />
                         </LinearLayout>
 
                         <LinearLayout
@@ -183,6 +171,7 @@
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -210,6 +199,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
+                    android:layout_marginTop="50dp"
                     android:src="@drawable/earth" />
 
                 <TextView
@@ -239,7 +229,8 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:src="@drawable/waterer" />
+                    android:src="@drawable/waterer"
+                    android:layout_marginTop="40dp"/>
 
                 <TextView
                     android:id="@+id/textView2"
@@ -257,9 +248,10 @@
         android:id="@+id/switchBtn"
         android:layout_width="140dp"
         android:layout_height="140dp"
-        android:layout_centerInParent="true"
-        android:layout_marginEnd="155dp"
+        android:layout_centerInParent="false"
+        android:layout_marginEnd="180dp"
         android:background="@drawable/button_green"
         android:elevation="0dp"
-        app:layout_constraintEnd_toStartOf="@+id/linearLayout" />
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"/>
 </RelativeLayout>
