@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/wConnStatusView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Connection Status"
+        android:textSize="20dp"/>
+    <TextView
+        android:id="@+id/wIpNumberView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="IP Number"
+        android:textSize="20dp"/>
+    <TextView
+        android:id="@+id/wPortNumberView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Port Number"
+        android:textSize="20dp"/>
+    <TextView
+        android:id="@+id/wtValueView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Something to show"
+        android:textSize="20dp"/>
+    <Button
+        android:id="@+id/wUpdateButton"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="UPDATE"/>
+
+</LinearLayout>
