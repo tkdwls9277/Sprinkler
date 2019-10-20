@@ -20,7 +20,7 @@ import java.net.UnknownHostException;
 
 public class WaterActivityTest extends AppCompatActivity {
 
-    private String serverIP = "192.168.43.28"; // 추후에 변경
+    private String serverIP = "117.16.152.128"; // 추후에 변경
     private int serverPort = 8080; // 추후에 변경
 
     private TextView soilValueView;
@@ -226,7 +226,7 @@ public class WaterActivityTest extends AppCompatActivity {
                 }
             }
             else {
-                Log.e("SenderThread", "wtf"); // 뒤로가기 버튼을 누르면 (종료코드) 여기로 온다 왜 그럴까
+                Log.e("WaterActivity", "SenderThread Fail"); // 뒤로가기 버튼을 누르면 (종료코드) 여기로 온다 왜 그럴까
             }
 
             if (msg.equals("E")) isConnected = false; // 종료 코드
