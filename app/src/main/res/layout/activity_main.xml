@@ -21,11 +21,16 @@
             android:orientation="horizontal">
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:text="Sprinkler Solar Cell"
                 android:textSize="20dp" />
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="auto / manual"
+                android:id="@+id/amButton"/>
         </LinearLayout>
 
         <View

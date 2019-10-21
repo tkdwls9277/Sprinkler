@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -58,9 +59,7 @@ public class MainActivity extends AppCompatActivity {
     TextView temp,city,date,weather,humidity,wind,sunset,sunrise;
     ImageView icon;
 
-    private TextView tvSolar; // 레이아웃 전환 테스트용
-    private TextView tvWater; // 레이아웃 전환 테스트용
-
+    private Button amButton;
     private ImageButton switchBtn; // 온오프 버튼 테스트용
     private ImageView waterTank;
 
@@ -72,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
     private Thread receiverThread;
     private BufferedReader bufferedReader;
     private int onOffStatus;
+    private int autoManualStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
         myAsyncTask.execute();
         Initialize();
 
-        new Thread(new ConnectThread(serverIP, serverPort)).start();
+        new Thread(new ConnectThread(serverIP, serverPort, "y")).start();
     }
     public void Initialize(){
         switchBtn = findViewById(R.id.switchBtn);
@@ -103,59 +103,22 @@ public class MainActivity extends AppCompatActivity {
 
                 new Thread(new SenderThread("m")).start();
                 if (socket.isClosed()) {
-                    Thread thread = new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                socket = new Socket(serverIP, serverPort);
-                            }
-                            catch( UnknownHostException e )
-                            {
-                                Log.e("ConnectThread",  "can't find host");
-                            }
-                            catch( SocketTimeoutException e )
-                            {
-                                Log.e("ConnectThread", "ConnectThread: timeout");
-                            }
-                            catch (Exception e) {
+                    new Thread(new ConnectThread(serverIP, serverPort, "m")).start();
 
-                                Log.e("ConnectThread", e.getMessage());
-                            }
-
-
-                            if (socket != null) {
-                                try {
-                                    bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
-
-                                    PrintWriter sendSignal = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8")), true);
-                                    sendSignal.println("m");
-                                    sendSignal.flush();
-
-                                    isConnected = true;
-                                    Log.e("MainActivity", "ConnectThread");
-                                }
-                                catch (IOException e) {
-                                    Log.e("ConnectThread", e.getMessage());
-                                }
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        if (isConnected) {
-                                            receiverThread = new Thread(new ReceiverThread());
-                                            receiverThread.start();
-                                            Log.e("ConnectThread", "ReceiverThread start");
-                                        }
-                                    }
-                                });
-
-                            }
-                        }
-                    });
-                    thread.start();
                 }
             }
         });
+        amButton = findViewById(R.id.amButton);
+        amButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new Thread(new SenderThread("A")).start();
+                if (socket.isClosed()) {
+                    new Thread(new ConnectThread(serverIP, serverPort, "A")).start();
 
+                }
+            }
+        });
     }
 
     @Override
@@ -193,10 +156,11 @@ public class MainActivity extends AppCompatActivity {
 
         private String serverIP;
         private int serverPort;
-
-        public ConnectThread(String ip, int port) {
+        private String msg;
+        public ConnectThread(String ip, int port, String msg) {
             serverIP = ip;
             serverPort = port;
+            this.msg = msg;
         }
 
         @Override
@@ -223,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
                     bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
 
                     PrintWriter sendSignal = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8")), true);
-                    sendSignal.println("y");
+                    sendSignal.println(msg);
                     sendSignal.flush();
 
                     isConnected = true;
@@ -283,11 +247,22 @@ public class MainActivity extends AppCompatActivity {
                                         break;
 
                                 }
+
                                 int waterTankValue = Integer.parseInt(parsing[1]);
                                 if (waterTankValue < 300) waterTank.setImageResource(R.drawable.watertank_quater1);
                                 else if (waterTankValue >= 300 && waterTankValue < 550) waterTank.setImageResource(R.drawable.watertank_quater2);
                                 else if (waterTankValue >= 550 && waterTankValue < 750) waterTank.setImageResource(R.drawable.watertank_quater2);
                                 else waterTank.setImageResource(R.drawable.watertank_full);
+
+                                autoManualStatus = Integer.parseInt(parsing[2]);
+                                switch (autoManualStatus) {
+                                    case 0:
+                                        amButton.setText("AUTO");
+                                        break;
+                                    case 1:
+                                        amButton.setText("MANUAL");
+                                        break;
+                                }
 
                             }
                         });
@@ -344,6 +319,7 @@ public class MainActivity extends AppCompatActivity {
         switch (v.getId()) {
             case R.id.textView1:{
                 Intent intent = new Intent(this, SoilActivityTest.class);
+                isConnected = false;
                 startActivity(intent);
                 break;
             }
@@ -355,6 +331,7 @@ public class MainActivity extends AppCompatActivity {
             }
             case R.id.tv_WeatherInfo:{
                 Intent intent = new Intent(this, Weather5days.class);
+                isConnected = false;
                 startActivity(intent);
                 break;
             }
