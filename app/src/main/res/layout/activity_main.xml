@@ -240,6 +240,7 @@
                 android:orientation="vertical">
 
                 <ImageView
+                    android:id="@+id/waterTankStatus"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginTop="40dp"
