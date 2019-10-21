@@ -102,7 +102,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 new Thread(new SenderThread("m")).start();
-                switchBtn.setBackgroundResource(R.drawable.button_red);
             }
         });
 
@@ -111,22 +110,30 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
-        new Thread(new SenderThread("E")).start();
+        try{
+            socket.close();
+        }
+        catch (IOException e) {
+            Log.e("소켓", "닫기 실패");
+        }
 
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        new Thread(new SenderThread("E")).start();
-
+        try{
+            socket.close();
+        }
+        catch (IOException e) {
+            Log.e("소켓", "닫기 실패");
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        new Thread(new SenderThread("y")).start();
+        Log.e("onResume", "yes");
     }
 
     private class ConnectThread implements Runnable {
@@ -167,6 +174,7 @@ public class MainActivity extends AppCompatActivity {
                     sendSignal.flush();
 
                     isConnected = true;
+                    Log.e("MainActivity", "ConnectThread");
                 }
                 catch (IOException e) {
                     Log.e("ConnectThread", e.getMessage());
@@ -197,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
         public void run() {
             try {
                 while (isConnected) {
-                    Log.e("ReceiverThread", "while");
+                    Log.e("MainActivity", "ReceiverThread");
                     if (bufferedReader == null) {
                         Log.e("ReceiverThread", "bufferedReader is null");
                         break;
@@ -259,7 +267,7 @@ public class MainActivity extends AppCompatActivity {
         }
         @Override
         public void run() {
-            if (isConnected && socket != null){
+            if (socket != null){
                 try {
                     PrintWriter sendSignal = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8")), true);
                     sendSignal.println(msg);
@@ -287,6 +295,7 @@ public class MainActivity extends AppCompatActivity {
             }
             case R.id.textView2:{
                 Intent intent = new Intent(this, WaterActivityTest.class);
+                isConnected = false;
                 startActivity(intent);
                 break;
             }

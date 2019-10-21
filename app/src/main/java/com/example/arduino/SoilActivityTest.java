@@ -20,7 +20,7 @@ import java.net.UnknownHostException;
 
 public class SoilActivityTest extends AppCompatActivity {
 
-    private String serverIP = "192.168.43.28"; // 추후에 변경
+    private String serverIP = "117.16.152.128"; // 추후에 변경
     private int serverPort = 8080; // 추후에 변경
 
     private TextView soilValueView;
@@ -153,7 +153,7 @@ public class SoilActivityTest extends AppCompatActivity {
         public void run() {
             try {
                 while (isConnected) {
-                    Log.e("ReceiverThread", "while");
+
                     if (bufferedReader == null) {
                         Log.e("ReceiverThread", "bufferedReader is null");
                         break;
