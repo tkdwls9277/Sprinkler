@@ -9,6 +9,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,6 +36,7 @@ public class WaterActivityTest extends AppCompatActivity {
     private Button updateBtn;
     private Socket socket;
     private boolean isConnected = false;
+    private ImageView waterTank;
 
     private Thread receiverThread;
 
@@ -50,7 +52,7 @@ public class WaterActivityTest extends AppCompatActivity {
         ipNumberView = findViewById(R.id.wIpNumberView);
         portNumberView = findViewById(R.id.wPortNumberView);
         updateBtn = findViewById(R.id.wUpdateButton);
-
+        waterTank = findViewById(R.id.waterTankStatus);
         updateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -105,7 +107,6 @@ public class WaterActivityTest extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
         new Thread(new SenderThread("e")).start();
 
     }
@@ -197,7 +198,7 @@ public class WaterActivityTest extends AppCompatActivity {
         public void run() {
             try {
                 while (isConnected) {
-                    Log.e("ReceiverThread", "while");
+                    Log.e("WaterActivity", "ReceiverThread");
                     if (bufferedReader == null) {
                         Log.e("ReceiverThread", "bufferedReader is null");
                         break;
@@ -206,10 +207,16 @@ public class WaterActivityTest extends AppCompatActivity {
                     final String recvMessage = bufferedReader.readLine();
                     // Log.e("ReceiverThread", recvMessage);
                     if (recvMessage != null) {
+
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 soilValueView.setText(recvMessage);
+                                int waterTankValue = Integer.parseInt(recvMessage);
+                                if (waterTankValue < 300) waterTank.setImageResource(R.drawable.watertank_quater1);
+                                else if (waterTankValue >= 300 && waterTankValue < 550) waterTank.setImageResource(R.drawable.watertank_quater2);
+                                else if (waterTankValue >= 550 && waterTankValue < 750) waterTank.setImageResource(R.drawable.watertank_quater2);
+                                else waterTank.setImageResource(R.drawable.watertank_full);
                             }
                         });
                     }
@@ -254,8 +261,7 @@ public class WaterActivityTest extends AppCompatActivity {
 
         public SenderThread (String msg) {
             this.msg = msg;
-        }
-        @Override
+        }        @Override
         public void run() {
             if (isConnected && socket != null){
                 try {
@@ -272,7 +278,7 @@ public class WaterActivityTest extends AppCompatActivity {
                 Log.e("WaterActivity", "SenderThread Fail"); // 뒤로가기 버튼을 누르면 (종료코드) 여기로 온다 왜 그럴까
             }
 
-            if (msg.equals("E")) isConnected = false; // 종료 코드
+            if (msg.equals("e")) isConnected = false; // 종료 코드
         }
     }
 }

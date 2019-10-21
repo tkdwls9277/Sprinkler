@@ -301,7 +301,6 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void run() {
             if (socket != null){
-                if (socket.isClosed()) Log.e("asdf","asdf");
                 try {
                     PrintWriter sendSignal = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8")), true);
                     sendSignal.println(msg);
@@ -374,7 +373,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
                 popupMenu.show();
-
+                break;
             }
         }
     }
