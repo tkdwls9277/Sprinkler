@@ -48,7 +48,8 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="도시"
-                android:textSize="30dp" />//도시
+                android:textSize="30dp"
+                android:paddingTop="20dp"/>//도시
 
             <TextView
                 android:id="@+id/date"
@@ -207,22 +208,23 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="49.5"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:id="@+id/textView1"
+                android:onClick="onClickView">
 
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginTop="50dp"
+                    android:layout_marginTop="60dp"
                     android:layout_weight="1"
                     android:gravity="center"
+                    android:layout_marginLeft="10dp"
                     android:src="@drawable/earth" />
 
                 <TextView
-                    android:id="@+id/textView1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:onClick="onClickView"
                     android:text="토양 수분량"
                     android:textSize="30dp" />
 
@@ -237,23 +239,24 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="49.5"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:onClick="onClickView"
+                android:id="@+id/textView2">
 
                 <ImageView
                     android:id="@+id/waterTankStatus"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginTop="40dp"
+                    android:layout_marginTop="50dp"
+                    android:layout_marginRight="5dp"
                     android:layout_weight="1"
                     android:gravity="center"
                     android:src="@drawable/waterer" />
 
                 <TextView
-                    android:id="@+id/textView2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:onClick="onClickView"
                     android:text="수위량"
                     android:textSize="30dp" />
             </LinearLayout>
