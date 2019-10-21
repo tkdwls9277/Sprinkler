@@ -1,13 +1,19 @@
 package com.example.arduino;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -39,10 +45,13 @@ public class Weather5days extends AppCompatActivity {
 
     ImageView icon;
     TextView city, wind,sunrise,sunset;
-    TextView day0datetxt,day1datetxt,day2datetxt,day3datetxt;
-    TextView day0weathertxt,day1weathertxt,day2weathertxt,day3weathertxt;
-    TextView day0temptxt,day1temptxt,day2temptxt,day3temptxt;
-    TextView day0humitxt,day1humitxt,day2humitxt,day3humitxt;
+    TextView day0datetxt,day1datetxt,day2datetxt,day3datetxt,day4datetxt;
+    TextView day0weathertxt,day1weathertxt,day2weathertxt,day3weathertxt,day4weathertxt;
+    TextView day0temptxt,day1temptxt,day2temptxt,day3temptxt,day4temptxt;
+    TextView day0humitxt,day1humitxt,day2humitxt,day3humitxt,day4humitxt;
+    TextView day0time0,day0time1,day0time2,day0time3,day0temp0,day0temp1,day0temp2,day0temp3;
+    ImageView day0icon0,day0icon1,day0icon2,day0icon3;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,21 +72,78 @@ public class Weather5days extends AppCompatActivity {
         day1datetxt = (TextView)findViewById(R.id.day1date);
         day2datetxt= (TextView)findViewById(R.id.day2date);
         day3datetxt = (TextView)findViewById(R.id.day3date);
+        day4datetxt = (TextView)findViewById(R.id.day4date);
 
         day0weathertxt = (TextView)findViewById(R.id.day0weather);
         day1weathertxt = (TextView)findViewById(R.id.day1weather);
         day2weathertxt = (TextView)findViewById(R.id.day2weather);
         day3weathertxt = (TextView)findViewById(R.id.day3weather);
+        day4weathertxt = (TextView)findViewById(R.id.day4weather);
 
         day0temptxt = (TextView)findViewById(R.id.day0temp);
         day1temptxt = (TextView)findViewById(R.id.day1temp);
         day2temptxt = (TextView)findViewById(R.id.day2temp);
         day3temptxt = (TextView)findViewById(R.id.day3temp);
+        day4temptxt = (TextView)findViewById(R.id.day4temp);
 
         day0humitxt = (TextView)findViewById(R.id.day0humi);
         day1humitxt = (TextView)findViewById(R.id.day1humi);
         day2humitxt = (TextView)findViewById(R.id.day2humi);
         day3humitxt = (TextView)findViewById(R.id.day3humi);
+        day4humitxt = (TextView)findViewById(R.id.day4humi);
+
+        day0time0 = (TextView)findViewById(R.id.day0time0);
+        day0time1 = (TextView)findViewById(R.id.day0time1);
+        day0time2 = (TextView)findViewById(R.id.day0time2);
+        day0time3 = (TextView)findViewById(R.id.day0time3);
+
+        day0temp0 = (TextView)findViewById(R.id.day0temp0);
+        day0temp1 = (TextView)findViewById(R.id.day0temp1);
+        day0temp2 = (TextView)findViewById(R.id.day0temp2);
+        day0temp3 = (TextView)findViewById(R.id.day0temp3);
+
+        day0icon0=(ImageView)findViewById(R.id.day0icon0);
+        day0icon1=(ImageView)findViewById(R.id.day0icon1);
+        day0icon2=(ImageView)findViewById(R.id.day0icon2);
+        day0icon3=(ImageView)findViewById(R.id.day0icon3);
+    }
+    public void onClickView(View v) {
+        if(v.getId()==R.id.menu){
+            PopupMenu popupMenu = new PopupMenu(getApplicationContext(), v);
+            MenuInflater inflater = popupMenu.getMenuInflater();
+            Menu menu = popupMenu.getMenu();
+
+            inflater.inflate(R.menu.popupmenu, menu);
+
+            popupMenu.setOnMenuItemClickListener
+                    (new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            Intent intent;
+                            switch (item.getItemId()) {
+                                case R.id.mainmenu:
+                                    intent = new Intent(Weather5days.this, MainActivity.class);
+                                    startActivity(intent);
+                                    return true;
+                                case R.id.weathermenu:
+                                    intent = new Intent(Weather5days.this, Weather5days.class);
+                                    startActivity(intent);
+                                    return true;
+                                case R.id.soilmenu:
+                                    intent = new Intent(Weather5days.this, SoilActivityTest.class);
+                                    startActivity(intent);
+                                    return true;
+                                case R.id.watermenu:
+                                    intent = new Intent(Weather5days.this, WaterActivityTest.class);
+                                    startActivity(intent);
+                                    return true;
+                            }
+                            return false;
+                        }
+                    });
+            popupMenu.show();
+
+        }
     }
 
     private void fine_weather(String url) {
@@ -91,6 +157,51 @@ public class Weather5days extends AppCompatActivity {
                     JSONObject day2=lists.getJSONObject(16);
                     JSONObject day3=lists.getJSONObject(24);
                     JSONObject day4=lists.getJSONObject(32);
+
+                    Calendar hcalendar = Calendar.getInstance();
+                    hcalendar.add(Calendar.HOUR,3);
+                    Date day0time=hcalendar.getTime();
+                    day0time0.setText(new SimpleDateFormat("HH시").format(day0time));
+                    hcalendar.add(Calendar.HOUR,3);
+                    day0time=hcalendar.getTime();
+                    day0time1.setText(new SimpleDateFormat("HH시").format(day0time));
+                    hcalendar.add(Calendar.HOUR,3);
+                    day0time=hcalendar.getTime();
+                    day0time2.setText(new SimpleDateFormat("HH시").format(day0time));
+                    hcalendar.add(Calendar.HOUR,3);
+                    day0time=hcalendar.getTime();
+                    day0time3.setText(new SimpleDateFormat("HH시").format(day0time));
+
+                    JSONObject day00=lists.getJSONObject(1);
+                    JSONObject day01=lists.getJSONObject(2);
+                    JSONObject day02=lists.getJSONObject(3);
+                    JSONObject day03=lists.getJSONObject(4);
+
+                    String icontxt=day00.getJSONArray("weather").getJSONObject(0).getString("icon");
+                    String iconurl="http://openweathermap.org/img/w/" + icontxt + ".png";
+                    Picasso.get().load(iconurl).into(day0icon0);
+                    icontxt=day01.getJSONArray("weather").getJSONObject(0).getString("icon");
+                    iconurl="http://openweathermap.org/img/w/" + icontxt + ".png";
+                    Picasso.get().load(iconurl).into(day0icon1);
+                    icontxt=day02.getJSONArray("weather").getJSONObject(0).getString("icon");
+                    iconurl="http://openweathermap.org/img/w/" + icontxt + ".png";
+                    Picasso.get().load(iconurl).into(day0icon2);
+                    icontxt=day03.getJSONArray("weather").getJSONObject(0).getString("icon");
+                    iconurl="http://openweathermap.org/img/w/" + icontxt + ".png";
+                    Picasso.get().load(iconurl).into(day0icon3);
+
+                    JSONObject day0main0=day00.getJSONObject("main");
+                    Double day0temp00=day0main0.getDouble("temp");
+                    day0temp0.setText(((int)(day0temp00-273.15))+"°C");
+                    JSONObject day0main1=day01.getJSONObject("main");
+                    Double day0temp01=day0main1.getDouble("temp");
+                    day0temp1.setText(((int)(day0temp01-273.15))+"°C");
+                    JSONObject day0main2=day02.getJSONObject("main");
+                    Double day0temp02=day0main2.getDouble("temp");
+                    day0temp2.setText(((int)(day0temp02-273.15))+"°C");
+                    JSONObject day0main3=day03.getJSONObject("main");
+                    Double day0temp03=day0main3.getDouble("temp");
+                    day0temp3.setText(((int)(day0temp03-273.15))+"°C");
 
                     //도시이름 파싱
                     JSONObject getcity=response.getJSONObject("city");
@@ -113,15 +224,17 @@ public class Weather5days extends AppCompatActivity {
                     String day3weather=day3.getJSONArray("weather").getJSONObject(0).getString("description");
                     String day4weather=day4.getJSONArray("weather").getJSONObject(0).getString("description");
 
-                    String icontxt=day0.getJSONArray("weather").getJSONObject(0).getString("icon");
-                    String iconurl="http://openweathermap.org/img/w/" + icontxt + ".png";
+                    icontxt=day0.getJSONArray("weather").getJSONObject(0).getString("icon");
+                    iconurl="http://openweathermap.org/img/w/" + icontxt + ".png";
                     Picasso.get().load(iconurl).into(icon);
+
 
                     //날씨 한글화
                     day0weathertxt.setText(new WeatherHangeul(day0weather).getWeather());
                     day1weathertxt.setText(new WeatherHangeul(day1weather).getWeather());
                     day2weathertxt.setText(new WeatherHangeul(day2weather).getWeather());
                     day3weathertxt.setText(new WeatherHangeul(day3weather).getWeather());
+                    day4weathertxt.setText(new WeatherHangeul(day4weather).getWeather());
 
                     //온도
                     JSONObject day0main=day0.getJSONObject("main");
@@ -140,6 +253,10 @@ public class Weather5days extends AppCompatActivity {
                     Double day3temp=day3main.getDouble("temp");
                     day3temptxt.setText(((int)(day3temp-273.15))+"°C");
                     day3humitxt.setText(day3main.getInt("humidity")+"%");
+                    JSONObject day4main=day4.getJSONObject("main");
+                    Double day4temp=day4main.getDouble("temp");
+                    day4temptxt.setText(((int)(day4temp-273.15))+"°C");
+                    day4humitxt.setText(day4main.getInt("humidity")+"%");
 
 
                     //달력에서 날짜 파싱
@@ -159,6 +276,10 @@ public class Weather5days extends AppCompatActivity {
                     Date day3date=mcalendar.getTime();
                     String sdf3=new SimpleDateFormat("MM월 dd일").format(day3date);
                     day3datetxt.setText(sdf3);
+                    mcalendar.add(Calendar.DAY_OF_WEEK,1);
+                    Date day4date=mcalendar.getTime();
+                    String sdf4=new SimpleDateFormat("MM월 dd일").format(day4date);
+                    day4datetxt.setText(sdf4);
 
                 }catch (JSONException e){
                     e.printStackTrace();

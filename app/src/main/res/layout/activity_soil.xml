@@ -1,37 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/sConnStatusView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="Connection Status"
-        android:textSize="20dp"/>
-    <TextView
-        android:id="@+id/sIpNumberView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="IP Number"
-        android:textSize="20dp"/>
-    <TextView
-        android:id="@+id/sPortNumberView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="Port Number"
-        android:textSize="20dp"/>
-    <TextView
-        android:id="@+id/soilValueView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="Something to show"
-        android:textSize="20dp"/>
-    <Button
-        android:id="@+id/sUpdateButton"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:text="UPDATE"/>
+    <android.support.design.widget.CollapsingToolbarLayout
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        app:popupTheme="@style/AppTheme.PopupOverlay"
+        tools:ignore="NewApi">
+
+        <ImageView
+            android:id="@+id/menu"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
+            android:onClick="onClickView"
+            android:src="@drawable/ic_menu_black_24dp" />
+
+    </android.support.design.widget.CollapsingToolbarLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="20dp"
+        android:orientation="vertical">
+        <TextView
+            android:paddingTop="20dp"
+            android:paddingBottom="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="토양 수분량"
+            android:textSize="40dp" />
+        <TextView
+            android:id="@+id/sConnStatusView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:hint="Connection Status"
+            android:textSize="20dp"
+            android:paddingBottom="10dp"/>
+
+        <TextView
+            android:id="@+id/sIpNumberView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:hint="IP Number"
+            android:textSize="20dp"
+            android:paddingBottom="10dp"/>
+
+        <ImageView
+        android:id="@+id/waterTankStatus"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:paddingBottom="20dp"
+        android:src="@drawable/earthdetail" />
+
+        <TextView
+            android:id="@+id/sPortNumberView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:hint="Port Number"
+            android:paddingBottom="10dp"
+            android:textSize="20dp" />
+
+        <TextView
+            android:id="@+id/soilValueView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:hint="Something to show"
+            android:paddingBottom="15dp"
+            android:textSize="20dp" />
+
+        <Button
+            android:id="@+id/sUpdateButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="UPDATE" />
+    </LinearLayout>
 
 </LinearLayout>
