@@ -102,6 +102,57 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 new Thread(new SenderThread("m")).start();
+                if (socket.isClosed()) {
+                    Thread thread = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                socket = new Socket(serverIP, serverPort);
+                            }
+                            catch( UnknownHostException e )
+                            {
+                                Log.e("ConnectThread",  "can't find host");
+                            }
+                            catch( SocketTimeoutException e )
+                            {
+                                Log.e("ConnectThread", "ConnectThread: timeout");
+                            }
+                            catch (Exception e) {
+
+                                Log.e("ConnectThread", e.getMessage());
+                            }
+
+
+                            if (socket != null) {
+                                try {
+                                    bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
+
+                                    PrintWriter sendSignal = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8")), true);
+                                    sendSignal.println("m");
+                                    sendSignal.flush();
+
+                                    isConnected = true;
+                                    Log.e("MainActivity", "ConnectThread");
+                                }
+                                catch (IOException e) {
+                                    Log.e("ConnectThread", e.getMessage());
+                                }
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (isConnected) {
+                                            receiverThread = new Thread(new ReceiverThread());
+                                            receiverThread.start();
+                                            Log.e("ConnectThread", "ReceiverThread start");
+                                        }
+                                    }
+                                });
+
+                            }
+                        }
+                    });
+                    thread.start();
+                }
             }
         });
 
@@ -116,6 +167,7 @@ public class MainActivity extends AppCompatActivity {
         catch (IOException e) {
             Log.e("소켓", "닫기 실패");
         }
+        new Thread(new SenderThread("E")).start();
 
     }
 
@@ -128,6 +180,7 @@ public class MainActivity extends AppCompatActivity {
         catch (IOException e) {
             Log.e("소켓", "닫기 실패");
         }
+        new Thread(new SenderThread("E")).start();
     }
 
     @Override
@@ -268,6 +321,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void run() {
             if (socket != null){
+                if (socket.isClosed()) Log.e("asdf","asdf");
                 try {
                     PrintWriter sendSignal = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8")), true);
                     sendSignal.println(msg);
