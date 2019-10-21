@@ -106,15 +106,15 @@ public class WaterActivityTest extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        new Thread(new SenderThread("E")).start();
+        new Thread(new SenderThread("e")).start();
 
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        new Thread(new SenderThread("E")).start();
-
+        Thread thread = new Thread(new SenderThread("e"));
+        thread.start();
     }
     private class ConnectThread implements Runnable {
 
@@ -227,11 +227,11 @@ public class WaterActivityTest extends AppCompatActivity {
                 Log.e("ReceiverThread", e.getMessage());
             }
 
-
+            /*
             if (socket != null) {
                 try {
                     socket.close();
-
+                    Log.e("WaterActivity", "close socket");
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -243,7 +243,7 @@ public class WaterActivityTest extends AppCompatActivity {
                 } catch (IOException e) {
                     Log.e("ReceiverThread", e.getMessage());
                 }
-            }
+            }*/
         }
 
     }

@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
@@ -62,9 +63,7 @@ public class MainActivity extends AppCompatActivity {
     TextView temp,city,date,weather,humidity,wind,sunset,sunrise;
     ImageView icon,menu_image;
 
-    private TextView tvSolar; // 레이아웃 전환 테스트용
-    private TextView tvWater; // 레이아웃 전환 테스트용
-
+    private Button amButton;
     private ImageButton switchBtn; // 온오프 버튼 테스트용
     private ImageView waterTank;
 
@@ -76,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
     private Thread receiverThread;
     private BufferedReader bufferedReader;
     private int onOffStatus;
+    private int autoManualStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
         myAsyncTask.execute();
         Initialize();
 
-        new Thread(new ConnectThread(serverIP, serverPort)).start();
+        new Thread(new ConnectThread(serverIP, serverPort, "y")).start();
     }
     public void Initialize(){
         switchBtn = findViewById(R.id.switchBtn);
@@ -107,9 +107,23 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 new Thread(new SenderThread("m")).start();
+                if (socket.isClosed()) {
+                    new Thread(new ConnectThread(serverIP, serverPort, "m")).start();
+
+                }
             }
         });
+        amButton = findViewById(R.id.amButton);
+        amButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new Thread(new SenderThread("A")).start();
+                if (socket.isClosed()) {
+                    new Thread(new ConnectThread(serverIP, serverPort, "A")).start();
 
+                }
+            }
+        });
     }
 
     @Override
@@ -121,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
         catch (IOException e) {
             Log.e("소켓", "닫기 실패");
         }
+        new Thread(new SenderThread("E")).start();
 
     }
 
@@ -133,6 +148,7 @@ public class MainActivity extends AppCompatActivity {
         catch (IOException e) {
             Log.e("소켓", "닫기 실패");
         }
+        new Thread(new SenderThread("E")).start();
     }
 
     @Override
@@ -145,10 +161,11 @@ public class MainActivity extends AppCompatActivity {
 
         private String serverIP;
         private int serverPort;
-
-        public ConnectThread(String ip, int port) {
+        private String msg;
+        public ConnectThread(String ip, int port, String msg) {
             serverIP = ip;
             serverPort = port;
+            this.msg = msg;
         }
 
         @Override
@@ -175,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
                     bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
 
                     PrintWriter sendSignal = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8")), true);
-                    sendSignal.println("y");
+                    sendSignal.println(msg);
                     sendSignal.flush();
 
                     isConnected = true;
@@ -235,11 +252,22 @@ public class MainActivity extends AppCompatActivity {
                                         break;
 
                                 }
+
                                 int waterTankValue = Integer.parseInt(parsing[1]);
                                 if (waterTankValue < 300) waterTank.setImageResource(R.drawable.watertank_quater1);
                                 else if (waterTankValue >= 300 && waterTankValue < 550) waterTank.setImageResource(R.drawable.watertank_quater2);
                                 else if (waterTankValue >= 550 && waterTankValue < 750) waterTank.setImageResource(R.drawable.watertank_quater2);
                                 else waterTank.setImageResource(R.drawable.watertank_full);
+
+                                autoManualStatus = Integer.parseInt(parsing[2]);
+                                switch (autoManualStatus) {
+                                    case 0:
+                                        amButton.setText("AUTO");
+                                        break;
+                                    case 1:
+                                        amButton.setText("MANUAL");
+                                        break;
+                                }
 
                             }
                         });
@@ -273,6 +301,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void run() {
             if (socket != null){
+                if (socket.isClosed()) Log.e("asdf","asdf");
                 try {
                     PrintWriter sendSignal = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8")), true);
                     sendSignal.println(msg);
@@ -295,6 +324,7 @@ public class MainActivity extends AppCompatActivity {
         switch (v.getId()) {
             case R.id.textView1:{
                 Intent intent = new Intent(this, SoilActivityTest.class);
+                isConnected = false;
                 startActivity(intent);
                 break;
             }
@@ -306,6 +336,7 @@ public class MainActivity extends AppCompatActivity {
             }
             case R.id.tv_WeatherInfo:{
                 Intent intent = new Intent(this, Weather5days.class);
+                isConnected = false;
                 startActivity(intent);
                 break;
             }

@@ -106,14 +106,14 @@ public class SoilActivityTest extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        new Thread(new SenderThread("E")).start();
+        new Thread(new SenderThread("e")).start();
 
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        new Thread(new SenderThread("E")).start();
+        new Thread(new SenderThread("e")).start();
 
     }
     private class ConnectThread implements Runnable {
