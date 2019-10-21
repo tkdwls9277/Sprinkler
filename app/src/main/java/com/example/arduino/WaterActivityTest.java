@@ -1,10 +1,15 @@
 package com.example.arduino;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,6 +62,44 @@ public class WaterActivityTest extends AppCompatActivity {
         });
 
         new Thread(new ConnectThread(serverIP, serverPort)).start();
+    }
+    public void onClickView(View v) {
+        if(v.getId()==R.id.menu){
+            PopupMenu popupMenu = new PopupMenu(getApplicationContext(), v);
+            MenuInflater inflater = popupMenu.getMenuInflater();
+            Menu menu = popupMenu.getMenu();
+
+            inflater.inflate(R.menu.popupmenu, menu);
+
+            popupMenu.setOnMenuItemClickListener
+                    (new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            Intent intent;
+                            switch (item.getItemId()) {
+                                case R.id.mainmenu:
+                                    intent = new Intent(WaterActivityTest.this, MainActivity.class);
+                                    startActivity(intent);
+                                    return true;
+                                case R.id.weathermenu:
+                                    intent = new Intent(WaterActivityTest.this, Weather5days.class);
+                                    startActivity(intent);
+                                    return true;
+                                case R.id.soilmenu:
+                                    intent = new Intent(WaterActivityTest.this, SoilActivityTest.class);
+                                    startActivity(intent);
+                                    return true;
+                                case R.id.watermenu:
+                                    intent = new Intent(WaterActivityTest.this, WaterActivityTest.class);
+                                    startActivity(intent);
+                                    return true;
+                            }
+                            return false;
+                        }
+                    });
+            popupMenu.show();
+
+        }
     }
 
     @Override

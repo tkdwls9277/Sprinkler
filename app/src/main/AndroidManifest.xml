@@ -16,18 +16,16 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".SoilActivityTest" />
-        <activity android:name=".WaterActivityTest" />
-        <activity android:name=".Weather5days" />
-        <activity android:name=".Main2Activity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".SoilActivityTest" android:launchMode="singleTask"/>
+        <activity android:name=".WaterActivityTest" android:launchMode="singleTask"/>
+        <activity android:name=".Weather5days" android:launchMode="singleTask"/>
     </application>
 
 </manifest>

@@ -12,9 +12,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -54,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean isPermission = false;
 
     TextView temp,city,date,weather,humidity,wind,sunset,sunrise;
-    ImageView icon;
+    ImageView icon,menu_image;
 
     private TextView tvSolar; // 레이아웃 전환 테스트용
     private TextView tvWater; // 레이아웃 전환 테스트용
@@ -67,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         temp = (TextView) findViewById(R.id.temp);
         city = (TextView) findViewById(R.id.city);
         date = (TextView) findViewById(R.id.date);
@@ -134,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
     public void onClickView(View v) { // 레이아웃 전환 테스트용
         switch (v.getId()) {
             case R.id.textView1:{
@@ -150,6 +156,42 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(this, Weather5days.class);
                 startActivity(intent);
                 break;
+            }
+            case R.id.menu:{
+                PopupMenu popupMenu = new PopupMenu(getApplicationContext(), v);
+                MenuInflater inflater = popupMenu.getMenuInflater();
+                Menu menu = popupMenu.getMenu();
+
+                inflater.inflate(R.menu.popupmenu, menu);
+
+                popupMenu.setOnMenuItemClickListener
+                        (new PopupMenu.OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClick(MenuItem item) {
+                                Intent intent;
+                                switch (item.getItemId()) {
+                                    case R.id.mainmenu:
+                                        intent = new Intent(MainActivity.this, MainActivity.class);
+                                        startActivity(intent);
+                                        return true;
+                                    case R.id.weathermenu:
+                                        intent = new Intent(MainActivity.this, Weather5days.class);
+                                        startActivity(intent);
+                                        return true;
+                                    case R.id.soilmenu:
+                                        intent = new Intent(MainActivity.this, SoilActivityTest.class);
+                                        startActivity(intent);
+                                        return true;
+                                    case R.id.watermenu:
+                                        intent = new Intent(MainActivity.this, WaterActivityTest.class);
+                                        startActivity(intent);
+                                        return true;
+                                }
+                                return false;
+                            }
+                        });
+                popupMenu.show();
+
             }
         }
     }
