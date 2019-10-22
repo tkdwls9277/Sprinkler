@@ -14,12 +14,27 @@
         app:popupTheme="@style/AppTheme.PopupOverlay"
         tools:ignore="NewApi">
 
-        <ImageView
-            android:id="@+id/menu"
-            android:layout_width="?attr/actionBarSize"
-            android:layout_height="?attr/actionBarSize"
-            android:onClick="onClickView"
-            android:src="@drawable/ic_menu_black_24dp" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/menu"
+                android:layout_width="?attr/actionBarSize"
+                android:layout_height="?attr/actionBarSize"
+                android:layout_alignParentLeft="true"
+                android:onClick="onClickView"
+                android:src="@drawable/ic_menu_black_24dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="?attr/actionBarSize"
+                android:layout_centerHorizontal="true"
+                android:gravity="center"
+                android:text="sprinkler"
+                android:textSize="30dp"
+                android:textColor="#ffffff"/>
+        </RelativeLayout>
 
     </android.support.design.widget.CollapsingToolbarLayout>
 
@@ -28,22 +43,24 @@
         android:layout_height="match_parent"
         android:layout_margin="20dp"
         android:orientation="vertical">
+
         <TextView
-            android:paddingTop="20dp"
-            android:paddingBottom="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:paddingTop="20dp"
+            android:paddingBottom="10dp"
             android:text="토양 수분량"
             android:textSize="40dp" />
+
         <TextView
             android:id="@+id/sConnStatusView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:hint="Connection Status"
-            android:textSize="20dp"
-            android:paddingBottom="10dp"/>
+            android:paddingBottom="10dp"
+            android:textSize="20dp" />
 
         <TextView
             android:id="@+id/sIpNumberView"
@@ -51,15 +68,15 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:hint="IP Number"
-            android:textSize="20dp"
-            android:paddingBottom="10dp"/>
+            android:paddingBottom="10dp"
+            android:textSize="20dp" />
 
         <ImageView
-        android:id="@+id/waterTankStatus"
-        android:layout_width="match_parent"
-        android:layout_height="250dp"
-        android:paddingBottom="20dp"
-        android:src="@drawable/earthdetail" />
+            android:id="@+id/waterTankStatus"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:paddingBottom="20dp"
+            android:src="@drawable/earthdetail" />
 
         <TextView
             android:id="@+id/sPortNumberView"

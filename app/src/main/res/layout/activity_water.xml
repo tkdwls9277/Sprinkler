@@ -14,12 +14,27 @@
         app:popupTheme="@style/AppTheme.PopupOverlay"
         tools:ignore="NewApi">
 
-        <ImageView
-            android:id="@+id/menu"
-            android:layout_width="?attr/actionBarSize"
-            android:layout_height="?attr/actionBarSize"
-            android:onClick="onClickView"
-            android:src="@drawable/ic_menu_black_24dp" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/menu"
+                android:layout_width="?attr/actionBarSize"
+                android:layout_height="?attr/actionBarSize"
+                android:onClick="onClickView"
+                android:src="@drawable/ic_menu_black_24dp"
+                android:layout_alignParentLeft="true"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="?attr/actionBarSize"
+                android:layout_centerHorizontal="true"
+                android:gravity="center"
+                android:text="sprinkler"
+                android:textSize="30dp"
+                android:textColor="#ffffff"/>
+        </RelativeLayout>
 
     </android.support.design.widget.CollapsingToolbarLayout>
 
@@ -44,8 +59,8 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:hint="Connection Status"
-            android:textSize="20dp"
-            android:paddingBottom="10dp"/>
+            android:paddingBottom="10dp"
+            android:textSize="20dp" />
 
         <TextView
             android:id="@+id/wIpNumberView"
@@ -53,8 +68,8 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:hint="IP Number"
-            android:textSize="20dp"
-            android:paddingBottom="10dp"/>
+            android:paddingBottom="10dp"
+            android:textSize="20dp" />
 
         <ImageView
             android:id="@+id/waterTankStatus"
@@ -63,12 +78,13 @@
             android:paddingBottom="20dp"
             android:src="@drawable/waterer" />
 
+
         <TextView
             android:id="@+id/wPortNumberView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Port Number"
             android:gravity="center"
+            android:hint="Port Number"
             android:paddingBottom="15dp"
             android:textSize="20dp" />
 
@@ -76,8 +92,8 @@
             android:id="@+id/wtValueView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Something to show"
             android:gravity="center"
+            android:hint="Something to show"
             android:paddingBottom="10dp"
             android:textSize="20dp" />
 

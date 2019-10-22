@@ -47,7 +47,7 @@ public class Weather5days extends AppCompatActivity {
     TextView city, wind,sunrise,sunset;
     TextView day0datetxt,day1datetxt,day2datetxt,day3datetxt,day4datetxt;
     TextView day0weathertxt,day1weathertxt,day2weathertxt,day3weathertxt,day4weathertxt;
-    TextView day0temptxt,day1temptxt,day2temptxt,day3temptxt,day4temptxt;
+    TextView day0mintemptxt,day1mintemptxt,day2mintemptxt,day3mintemptxt,day4mintemptxt;
     TextView day0humitxt,day1humitxt,day2humitxt,day3humitxt,day4humitxt;
     TextView day0time0,day0time1,day0time2,day0time3,day0temp0,day0temp1,day0temp2,day0temp3;
     ImageView day0icon0,day0icon1,day0icon2,day0icon3;
@@ -80,11 +80,11 @@ public class Weather5days extends AppCompatActivity {
         day3weathertxt = (TextView)findViewById(R.id.day3weather);
         day4weathertxt = (TextView)findViewById(R.id.day4weather);
 
-        day0temptxt = (TextView)findViewById(R.id.day0temp);
-        day1temptxt = (TextView)findViewById(R.id.day1temp);
-        day2temptxt = (TextView)findViewById(R.id.day2temp);
-        day3temptxt = (TextView)findViewById(R.id.day3temp);
-        day4temptxt = (TextView)findViewById(R.id.day4temp);
+        day0mintemptxt = (TextView)findViewById(R.id.day0temp);
+        day1mintemptxt = (TextView)findViewById(R.id.day1temp);
+        day2mintemptxt = (TextView)findViewById(R.id.day2temp);
+        day3mintemptxt = (TextView)findViewById(R.id.day3temp);
+        day4mintemptxt = (TextView)findViewById(R.id.day4temp);
 
         day0humitxt = (TextView)findViewById(R.id.day0humi);
         day1humitxt = (TextView)findViewById(R.id.day1humi);
@@ -238,26 +238,25 @@ public class Weather5days extends AppCompatActivity {
 
                     //온도
                     JSONObject day0main=day0.getJSONObject("main");
-                    Double day0temp=day0main.getDouble("temp");
-                    day0temptxt.setText(((int)(day0temp-273.15))+"°C");
+                    Double day0temp=day0main.getDouble("temp_min");
+                    day0mintemptxt.setText(((int)(day0temp-273.15))+"°C");
                     day0humitxt.setText(day0main.getInt("humidity")+"%");
                     JSONObject day1main=day1.getJSONObject("main");
-                    Double day1temp=day1main.getDouble("temp");
-                    day1temptxt.setText(((int)(day1temp-273.15))+"°C");
+                    Double day1temp=day1main.getDouble("temp_min");
+                    day1mintemptxt.setText(((int)(day1temp-273.15))+"°C");
                     day1humitxt.setText(day1main.getInt("humidity")+"%");
                     JSONObject day2main=day2.getJSONObject("main");
-                    Double day2temp=day2main.getDouble("temp");
-                    day2temptxt.setText(((int)(day2temp-273.15))+"°C");
+                    Double day2temp=day2main.getDouble("temp_min");
+                    day2mintemptxt.setText(((int)(day2temp-273.15))+"°C");
                     day2humitxt.setText(day2main.getInt("humidity")+"%");
                     JSONObject day3main=day3.getJSONObject("main");
-                    Double day3temp=day3main.getDouble("temp");
-                    day3temptxt.setText(((int)(day3temp-273.15))+"°C");
+                    Double day3temp=day3main.getDouble("temp_min");
+                    day3mintemptxt.setText(((int)(day3temp-273.15))+"°C");
                     day3humitxt.setText(day3main.getInt("humidity")+"%");
                     JSONObject day4main=day4.getJSONObject("main");
-                    Double day4temp=day4main.getDouble("temp");
-                    day4temptxt.setText(((int)(day4temp-273.15))+"°C");
+                    Double day4temp=day4main.getDouble("temp_min");
+                    day4mintemptxt.setText(((int)(day4temp-273.15))+"°C");
                     day4humitxt.setText(day4main.getInt("humidity")+"%");
-
 
                     //달력에서 날짜 파싱
                     Calendar mcalendar = Calendar.getInstance();
