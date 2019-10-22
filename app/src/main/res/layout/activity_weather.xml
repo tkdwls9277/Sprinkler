@@ -73,12 +73,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="#3CF1EBF1"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:gravity="center">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:paddingBottom="20dp">
 
                         <LinearLayout
                             android:layout_width="0dp"
