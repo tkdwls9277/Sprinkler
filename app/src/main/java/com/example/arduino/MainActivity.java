@@ -4,9 +4,6 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -37,14 +34,11 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.net.URL;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -52,7 +46,7 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
-    double lat, lon;//위도 경도 값
+    double lat, lon; //위도 경도 값
     private GpsInfo gps;
     private final int PERMISSIONS_ACCESS_FINE_LOCATION = 1000;
     private final int PERMISSIONS_ACCESS_COARSE_LOCATION = 1001;
@@ -69,8 +63,8 @@ public class MainActivity extends AppCompatActivity {
 
     private Socket socket;
     private boolean isConnected = false;
-    private String serverIP = "117.16.152.128";
-    private int serverPort = 8080;
+    private String serverIP = "192.168.43.28"; // IP 수정
+    private int serverPort = 8080; // 포트번호 수정
 
     private Thread receiverThread;
     private BufferedReader bufferedReader;
@@ -90,8 +84,8 @@ public class MainActivity extends AppCompatActivity {
         wind = (TextView) findViewById(R.id.wind);
         sunrise=(TextView)findViewById(R.id.sunrise);
         sunset=(TextView)findViewById(R.id.sunset);
-        icon=(ImageView)findViewById(R.id.icon);
         waterTank = findViewById(R.id.waterTankStatus);
+        icon=(ImageView)findViewById(R.id.icon);
 
         gps = new GpsInfo(MainActivity.this);
         MyAsyncTask myAsyncTask = new MyAsyncTask();
@@ -104,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
         switchBtn = findViewById(R.id.switchBtn);
         switchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v) { // 모터를 ON, OFF하는 버튼
 
                 new Thread(new SenderThread("m")).start();
                 if (socket.isClosed()) {
@@ -116,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
         amButton = findViewById(R.id.amButton);
         amButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v) { // 모터를 자동, 수동으로 바꾸는 버튼
                 new Thread(new SenderThread("A")).start();
                 if (socket.isClosed()) {
                     new Thread(new ConnectThread(serverIP, serverPort, "A")).start();
@@ -129,25 +123,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        try{
-            socket.close();
-        }
-        catch (IOException e) {
-            Log.e("소켓", "닫기 실패");
-        }
         new Thread(new SenderThread("E")).start();
-
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        try{
-            socket.close();
-        }
-        catch (IOException e) {
-            Log.e("소켓", "닫기 실패");
-        }
         new Thread(new SenderThread("E")).start();
     }
 
@@ -157,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
         Log.e("onResume", "yes");
     }
 
-    private class ConnectThread implements Runnable {
+    private class ConnectThread implements Runnable { // 어플과 아두이노를 연결한다
 
         private String serverIP;
         private int serverPort;
@@ -221,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private class ReceiverThread implements Runnable {
+    private class ReceiverThread implements Runnable { // 아두이노에서 보낸 데이터를 받는다
 
         @Override
         public void run() {
@@ -238,12 +219,10 @@ public class MainActivity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                String[] parsing = recvMessage.split("L");
-                                onOffStatus = Integer.parseInt(parsing[0]);
-                                // 모터가 가동중일 때와 아닐 때 구분해서
-                                // 버튼 색깔 지정
+                                String[] parsing = recvMessage.split("L"); // 데이터를 L을 기준으로 구분
+                                onOffStatus = Integer.parseInt(parsing[0]); // 모터 상태에 대한 데이터가 들어오는 곳
 
-                                switch (onOffStatus) {
+                                switch (onOffStatus) { // ON OFF 상태에 따라 버튼 색깔 지정
                                     case 0:
                                         switchBtn.setBackgroundResource(R.drawable.button_red);
                                         break;
@@ -253,14 +232,17 @@ public class MainActivity extends AppCompatActivity {
 
                                 }
 
-                                int waterTankValue = Integer.parseInt(parsing[1]);
+                                int waterTankValue = Integer.parseInt(parsing[1]); // 수위량 데이터가 들어오는 곳
+
+                                // 수위량에 따라 이미자가 바뀐다
                                 if (waterTankValue < 300) waterTank.setImageResource(R.drawable.watertank_quater1);
                                 else if (waterTankValue >= 300 && waterTankValue < 550) waterTank.setImageResource(R.drawable.watertank_quater2);
                                 else if (waterTankValue >= 550 && waterTankValue < 750) waterTank.setImageResource(R.drawable.watertank_quater2);
                                 else waterTank.setImageResource(R.drawable.watertank_full);
 
-                                autoManualStatus = Integer.parseInt(parsing[2]);
-                                switch (autoManualStatus) {
+                                autoManualStatus = Integer.parseInt(parsing[2]); // 자동, 수동 상태에 대한 데이터가 들어오는 곳
+
+                                switch (autoManualStatus) { // 자동, 수동 상태에 따라 텍스트 수정
                                     case 0:
                                         amButton.setText("AUTO");
                                         break;
@@ -297,7 +279,7 @@ public class MainActivity extends AppCompatActivity {
 
         public SenderThread (String msg) {
             this.msg = msg;
-        }
+        } // 어플에서 아두이노로 데이터를 보내준다
         @Override
         public void run() {
             if (socket != null){
@@ -312,7 +294,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
             else {
-                Log.e("SenderThread", "wtf"); // 뒤로가기 버튼을 누르면 (종료코드) 여기로 온다 왜 그럴까
+                Log.e("SenderThread", "wtf");
             }
 
             if (msg.equals("E")) isConnected = false; // 종료 코드
@@ -321,14 +303,14 @@ public class MainActivity extends AppCompatActivity {
 
     public void onClickView(View v) { // 레이아웃 전환 테스트용
         switch (v.getId()) {
-            case R.id.textView1:{
-                Intent intent = new Intent(this, SoilActivityTest.class);
+            case R.id.soilImage:{
+                Intent intent = new Intent(this, SoilActivity.class);
                 isConnected = false;
                 startActivity(intent);
                 break;
             }
-            case R.id.textView2:{
-                Intent intent = new Intent(this, WaterActivityTest.class);
+            case R.id.waterTankStatus:{
+                Intent intent = new Intent(this, WaterActivity.class);
                 isConnected = false;
                 startActivity(intent);
                 break;
@@ -340,6 +322,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
             }
             case R.id.menu:{
+                Log.e("click","이벤트");
                 PopupMenu popupMenu = new PopupMenu(getApplicationContext(), v);
                 MenuInflater inflater = popupMenu.getMenuInflater();
                 Menu menu = popupMenu.getMenu();
@@ -361,11 +344,11 @@ public class MainActivity extends AppCompatActivity {
                                         startActivity(intent);
                                         return true;
                                     case R.id.soilmenu:
-                                        intent = new Intent(MainActivity.this, SoilActivityTest.class);
+                                        intent = new Intent(MainActivity.this, SoilActivity.class);
                                         startActivity(intent);
                                         return true;
                                     case R.id.watermenu:
-                                        intent = new Intent(MainActivity.this, WaterActivityTest.class);
+                                        intent = new Intent(MainActivity.this, WaterActivity.class);
                                         startActivity(intent);
                                         return true;
                                 }
@@ -401,7 +384,9 @@ public class MainActivity extends AppCompatActivity {
                     String iconimage=object.getString("icon");
                     String iconurl="http://openweathermap.org/img/w/" + iconimage + ".png";
                     Log.e("iconurl",iconurl);
+
                     Picasso.get().load(iconurl).into(icon);
+                    Log.e("image","mainweather");
 
                     city.setText(mcity);
                     WeatherHangeul weatherHangeul = new WeatherHangeul(mdes);

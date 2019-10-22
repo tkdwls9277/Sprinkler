@@ -23,8 +23,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SoilActivityTest" android:launchMode="singleTask"/>
-        <activity android:name=".WaterActivityTest" android:launchMode="singleTask"/>
+        <activity android:name=".SoilActivity" android:launchMode="singleTask"/>
+        <activity android:name=".WaterActivity" android:launchMode="singleTask"/>
         <activity android:name=".Weather5days" android:launchMode="singleTask"/>
     </application>
 

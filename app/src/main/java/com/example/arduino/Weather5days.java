@@ -130,11 +130,11 @@ public class Weather5days extends AppCompatActivity {
                                     startActivity(intent);
                                     return true;
                                 case R.id.soilmenu:
-                                    intent = new Intent(Weather5days.this, SoilActivityTest.class);
+                                    intent = new Intent(Weather5days.this, SoilActivity.class);
                                     startActivity(intent);
                                     return true;
                                 case R.id.watermenu:
-                                    intent = new Intent(Weather5days.this, WaterActivityTest.class);
+                                    intent = new Intent(Weather5days.this, WaterActivity.class);
                                     startActivity(intent);
                                     return true;
                             }

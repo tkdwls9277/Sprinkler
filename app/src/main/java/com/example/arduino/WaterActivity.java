@@ -24,10 +24,10 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
-public class WaterActivityTest extends AppCompatActivity {
+public class WaterActivity extends AppCompatActivity {
 
-    private String serverIP = "117.16.152.128"; // 추후에 변경
-    private int serverPort = 8080; // 추후에 변경
+    private String serverIP = "192.168.43.28"; // IP 수정
+    private int serverPort = 8080; // 포트 번호 수정
 
     private TextView soilValueView;
     private TextView connStatusView;
@@ -80,19 +80,19 @@ public class WaterActivityTest extends AppCompatActivity {
                             Intent intent;
                             switch (item.getItemId()) {
                                 case R.id.mainmenu:
-                                    intent = new Intent(WaterActivityTest.this, MainActivity.class);
+                                    intent = new Intent(WaterActivity.this, MainActivity.class);
                                     startActivity(intent);
                                     return true;
                                 case R.id.weathermenu:
-                                    intent = new Intent(WaterActivityTest.this, Weather5days.class);
+                                    intent = new Intent(WaterActivity.this, Weather5days.class);
                                     startActivity(intent);
                                     return true;
                                 case R.id.soilmenu:
-                                    intent = new Intent(WaterActivityTest.this, SoilActivityTest.class);
+                                    intent = new Intent(WaterActivity.this, SoilActivity.class);
                                     startActivity(intent);
                                     return true;
                                 case R.id.watermenu:
-                                    intent = new Intent(WaterActivityTest.this, WaterActivityTest.class);
+                                    intent = new Intent(WaterActivity.this, WaterActivity.class);
                                     startActivity(intent);
                                     return true;
                             }
