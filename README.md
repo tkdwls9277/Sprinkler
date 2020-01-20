@@ -9,8 +9,8 @@ Monitoring application that operates the motor of the water tank according to th
 
 <div>
 <img src=https://user-images.githubusercontent.com/49237608/72697923-2e32ed00-3b85-11ea-98f0-2189f9e90250.jpg>
-![KakaoTalk_20200120_125507991](https://user-images.githubusercontent.com/49237608/72697926-325f0a80-3b85-11ea-8533-b1e8fdd640d4.jpg)
-![KakaoTalk_20200120_125508706](https://user-images.githubusercontent.com/49237608/72697928-3559fb00-3b85-11ea-8aa6-daf8fb3a49e1.jpg)
-![KakaoTalk_20200120_125509041](https://user-images.githubusercontent.com/49237608/72697932-37bc5500-3b85-11ea-9e9a-e42233dfea07.jpg)
-![KakaoTalk_20200120_125508349](https://user-images.githubusercontent.com/49237608/72697933-39861880-3b85-11ea-89f4-b86413e96d29.jpg)
+<img src=https://user-images.githubusercontent.com/49237608/72697926-325f0a80-3b85-11ea-8533-b1e8fdd640d4.jpg>
+<img src=https://user-images.githubusercontent.com/49237608/72697928-3559fb00-3b85-11ea-8aa6-daf8fb3a49e1.jpg>
+<img src=https://user-images.githubusercontent.com/49237608/72697932-37bc5500-3b85-11ea-9e9a-e42233dfea07.jpg>
+<img src=https://user-images.githubusercontent.com/49237608/72697933-39861880-3b85-11ea-89f4-b86413e96d29.jpg>
 </div>
