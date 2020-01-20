@@ -1,0 +1,280 @@
+
+#include <ESP8266.h>
+
+#include <LiquidCrystal_I2C.h>
+#include <SoftwareSerial.h>
+//#include "ESP8266.h"
+
+#define WATER A2 // 수위
+#define A_SOIL_HUMI A0 // 토양
+#define O_PUMP 8
+#define O_RGB_R 10
+#define O_RGB_G 9
+#define O_RGB_B 11
+#define LCD_I2C_ADDR 0x27
+#define SSID "AndroidHotspot4330" // 와이파이 이름
+#define PASSWORD "wkddudwls12" // 와이파이 비밀번호
+
+int soilHumidity; // 토양 수분량
+int waterTank; // 수위
+
+int isOperating = 0;
+// 0이면 OFF
+// 1이면 ON
+
+int autoManualStatus = 0;
+// 0이면 자동
+// 1이면 수동
+LiquidCrystal_I2C lcd(LCD_I2C_ADDR, 16, 2); // LCD
+
+/*LCD INTRO출력하기*/
+void introLcd() {
+lcd.print("Grow Plant 1.0");
+}
+/*LCD 습도 프린트하기*/
+void printSoil() {
+lcd.setCursor(0,0);
+lcd.print("Moisture : ");
+lcd.print(soilHumidity);
+lcd.print("%");
+}
+
+void printWater() {
+lcd.setCursor(0,0);
+lcd.print("Water Level : ");
+lcd.print(waterTank);
+}
+
+/*LCD 초기화하기*/
+void initLcd() {
+lcd.begin();
+lcd.backlight();
+lcd.setCursor(0, 0);
+introLcd();
+}
+
+SoftwareSerial mySerial(2, 3); // RX, TX
+ESP8266 wifi(mySerial);
+
+/*디지털핀 초기화하기*/
+void initPin() {
+  pinMode(WATER, INPUT);
+  pinMode(O_PUMP, OUTPUT);
+  //pinMode(O_RGB_R, OUTPUT);
+  //pinMode(O_RGB_G, OUTPUT);
+  //pinMode(O_RGB_B, OUTPUT);
+  digitalWrite(O_PUMP, HIGH);
+  //digitalWrite(O_RGB_R, LOW);
+  //digitalWrite(O_RGB_G, LOW);
+  //digitalWrite(O_RGB_B, LOW);
+}
+void printUsage(uint8_t mux_id)
+{
+    char buf[]="DEFAULT\r\n";
+    wifi.send(mux_id, buf, strlen(buf));
+}
+/*토양습도 계산하기*/
+void calcSoilHumidity() {
+  soilHumidity = map(analogRead(A_SOIL_HUMI), 550, 0, 0, 100);
+}
+
+
+void writeRGB(bool R, bool G, bool B) {
+  digitalWrite(O_RGB_R, R);
+  digitalWrite(O_RGB_G, G);
+  digitalWrite(O_RGB_B, B);
+}
+
+void toOutputString(String* s) {
+  *s = String(isOperating);
+  *s += "L"; // L을 기준으로 파싱
+  waterTank = analogRead(WATER);
+  *s += waterTank;
+  *s += "L";
+  *s += autoManualStatus;
+  *s += "\r\n";
+  Serial.print(*s);
+}
+
+void setup() {
+  //RGB LED를 보라색(빨강+파랑)으로 출력합니다.
+  writeRGB(HIGH, LOW, HIGH);
+
+  Serial.begin(9600);
+  mySerial.begin(9600);//기본 통신 속도가 9600인 제품은 9600으로 수정해 주세요
+
+  initPin();
+  initLcd();
+ 
+    if (wifi.setOprToStationSoftAP()) {
+        Serial.print("to station + softap ok\r\n");
+    } else {
+        Serial.print("to station + softap err\r\n");
+    }
+    delay(50);
+    if (wifi.joinAP(SSID, PASSWORD)) {
+        Serial.print("Join AP success\r\n");
+        Serial.print("IP: ");
+        Serial.println(wifi.getLocalIP().c_str());
+        lcd.setCursor(0, 0);
+        lcd.print("Join AP success");    
+    } else {
+        Serial.print("Join AP failure\r\n");
+        lcd.setCursor(0, 0);
+        lcd.print("Join AP failure");
+    }
+    delay(50);
+    if (wifi.enableMUX()) { // wifi.enableMUX()
+        Serial.print("multiple ok\r\n");
+    } else {
+        Serial.print("multiple err\r\n");
+    }
+    delay(50);
+    if (wifi.startTCPServer(8080)) { // 포트번호 수정
+        Serial.print("start tcp server ok\r\n");
+    } else {
+        Serial.print("start tcp server err\r\n");
+    }
+    delay(50);
+    if (wifi.setTCPServerTimeout(360)) { 
+        Serial.print("set tcp server timout 360 seconds\r\n");
+    } else {
+        Serial.print("set tcp server timout err\r\n");
+    }
+    calcSoilHumidity();
+}
+
+void loop() {
+  if (autoManualStatus == 0) {  // 자동일 때
+    if (soilHumidity < 0) { // 수분이 없을 때
+      digitalWrite(O_PUMP, LOW);
+      //Serial.println("auto on");
+    }
+    else { // 많을 때
+      digitalWrite(O_PUMP, HIGH);
+      //Serial.println("auto off");
+    }
+  } 
+  else {  // 수동일 때
+    if (isOperating == 0) { // 버튼 ON
+      digitalWrite(O_PUMP, HIGH);
+      //Serial.println("manual off");
+    }
+    else { // 버튼 OFF
+      digitalWrite(O_PUMP, LOW);
+      //Serial.println("manual on");
+    }
+  }
+  
+  uint8_t buffer[128] = {0};
+  uint8_t mux_id;
+  uint32_t len = wifi.recv(&mux_id, buffer, sizeof(buffer), 100);
+  // 어플에서 데이터를 받아서 저장하는 곳
+    
+  if (len > 0) { // 어플에서 데이터를 받았을 때
+    Serial.print("Status : ");
+    Serial.print(wifi.getIPStatus().c_str());
+    Serial.println("]");
+    
+    Serial.print("Received from : ");
+    Serial.println(mux_id);
+
+    Serial.print("Received : ");
+    for(uint32_t i = 0; i < len; i++) {
+        Serial.print((char)buffer[i]);
+    }
+    Serial.print("\r\n");
+
+
+    char command = buffer[0];
+    String s = "";
+    char buff[s.length() + 1] = {0};
+    Serial.println(command);
+    switch (command){
+        case 'S': // 토양 수분량 화면에 들어갔을 때
+          calcSoilHumidity();
+          delay(100);
+          Serial.print("Moisture : ");
+          Serial.print(soilHumidity);
+          Serial.println("%");
+          printSoil();
+          
+          s = String(soilHumidity);
+          s += "\r\n";
+          s.toCharArray(buff, s.length());
+          wifi.send(mux_id, buff, strlen(buff));
+          break;
+          
+        case 'W': // 수위량 화면에 들어갔을 때
+          waterTank = analogRead(WATER);
+          delay(100);
+          Serial.println("WaterTank : " + analogRead(WATER));
+          printWater();
+          
+          s = String(waterTank);
+          s += "\r\n";
+          s.toCharArray(buff, s.length());
+          wifi.send(mux_id, buff, strlen(buff));
+          break;
+          
+        case 'y': // 메인 화면 출력 시
+          lcd.setCursor(0, 0);
+          lcd.print("Grow Plant 1.0  ");
+          toOutputString(&s);
+          s.toCharArray(buff, s.length());
+          wifi.send(mux_id, buff, strlen(buff));
+          break;
+
+        case 'm': // 버튼 누를 시
+          lcd.setCursor(0, 0);
+          Serial.println(isOperating);
+          if (isOperating == 1) {
+            isOperating = 0;
+            lcd.print("Turn off      ");
+            
+            toOutputString(&s);
+            s.toCharArray(buff, s.length());
+            wifi.send(mux_id, buff, strlen(buff));
+          }
+          else {
+            isOperating = 1;
+            lcd.print("Turn on       ");
+            
+            toOutputString(&s);
+            s.toCharArray(buff, s.length());
+            wifi.send(mux_id, buff, strlen(buff));
+          }
+          break;
+        case 'A': // 자동 수동 버튼 누를 시
+          lcd.setCursor(0,0);
+          if (autoManualStatus == 0) {
+
+            autoManualStatus = 1;
+            lcd.print("     MANUAL     ");
+            toOutputString(&s);
+            s.toCharArray(buff, s.length());
+            wifi.send(mux_id, buff, strlen(buff));
+          }
+          else {
+
+            autoManualStatus = 0;
+            lcd.print("      AUTO      ");
+            toOutputString(&s);
+            s.toCharArray(buff, s.length());
+            wifi.send(mux_id, buff, strlen(buff));
+          }
+          break;
+        case 'e': // 상세 액티비티 종료 시
+          wifi.releaseTCP(mux_id);
+          //for (int i = 0; i < 5; i++) wifi.releaseTCP(i);
+          break;
+        case 'E': // 메인 액티비티 종료 시
+          lcd.setCursor(0, 0);
+          lcd.print("Application end");
+          for (int i = 0; i < 5; i++) wifi.releaseTCP(i);
+          break;
+          
+      }      
+  }
+
+}
